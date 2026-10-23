@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Merci pour votre commande – Cozy Dragon</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f3d2e">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f3d2e'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23b7ff3c'/%3E%3Cellipse cx='32' cy='32' rx='4' ry='12' fill='%230b1210'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="./" data-brand-link>
+        <span class="brand__text" data-brand>Cozy Dragon</span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="./">Accueil</a>
+        <a href="./#contact">Contact</a>
+      </nav>
+      <div class="header__right">
+        <a class="social" data-social="instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram" hidden></a>
+        <a class="social" data-social="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" hidden></a>
+        <a class="btn btn--sm header__cta" href="./#buybox">Commander</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container page">
+    <div class="thanks">
+      <span class="thanks__icon"><span data-icon="check"></span></span>
+      <p class="eyebrow">Commande confirmée</p>
+      <h1>Merci ! Votre commande est confirmée.</h1>
+      <p>Votre dragon est entre de bonnes mains. Vous recevez dans quelques minutes un e-mail de confirmation avec le récapitulatif de votre paiement.</p>
+
+      <div class="steps" aria-label="Et maintenant ?">
+        <div class="step">
+          <span class="step__num">1</span>
+          <div><strong>Confirmation par e-mail</strong><span>Le reçu Stripe arrive dans votre boîte mail. Pensez à vérifier vos spams.</span></div>
+        </div>
+        <div class="step">
+          <span class="step__num">2</span>
+          <div><strong>Préparation</strong><span data-shipping="processing">Chaque commande est préparée avec soin sous 1 à 3 jours ouvrés.</span></div>
+        </div>
+        <div class="step">
+          <span class="step__num">3</span>
+          <div><strong>Expédition suivie</strong><span data-shipping="delivery">Le numéro de suivi vous est envoyé par e-mail dès l'expédition.</span></div>
+        </div>
+      </div>
+
+      <p>Une question sur votre commande ? Écrivez-nous à <a data-email-link href="#"><span data-email>contact@example.com</span></a> en indiquant l'adresse e-mail utilisée lors du paiement.</p>
+      <a class="btn btn--primary btn--lg" href="./">Retour à la boutique</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="footer__name" data-brand>Cozy Dragon</span>
+        <p class="footer__tagline" data-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Pages légales">
+        <a href="./mentions-legales.html">Mentions légales</a>
+        <a href="./cgv.html">CGV</a>
+        <a href="./retours.html">Politique de retour</a>
+        <a href="./#contact">Contact</a>
+      </nav>
+      <p class="footer__copy">© <span data-year></span> <span data-brand>Cozy Dragon</span> · Paiement sécurisé par Stripe</p>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

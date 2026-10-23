@@ -1,0 +1,32 @@
+{
+  "brand": "Cozy Dragon",
+  "name": "Dragon Onesie™ – Pyjama dragon noir à capuche",
+  "shortName": "Dragon Onesie",
+  "siteUrl": "https://chaborz-saas.github.io/cozy-dragon/",
+  "announcement": { "text": "Code DRAGON10 = -10 %", "code": "DRAGON10" },
+  "tagline": "Le pyjama dragon ultra-doux qui transforme chaque soirée en film.",
+  "description": "Une combinaison polaire oversize avec capuche dragon, yeux brodés et cornes en relief. Pensée pour les soirées canapé, les marathons de films et les nuits d'hiver. Unisexe, du S au XXL.",
+  "currency": "eur",
+  "priceEur": 49.90,
+  "compareAtEur": 69.90,
+  "images": [
+    "img/1.jpg",
+    "img/2.jpg",
+    "img/3.jpg",
+    "img/4.jpg",
+    "img/5.jpg"
+  ],
+  "bundles": [
+    { "id": "b1", "qty": 1, "title": "1 Dragon Onesie", "discountPct": 0, "paymentLink": "", "paymentLinkWithUpsell": "" },
+    { "id": "b2", "qty": 2, "title": "Pack Duo", "discountPct": 10, "paymentLink": "", "paymentLinkWithUpsell": "" },
+    { "id": "b3", "qty": 3, "title": "Pack Famille", "discountPct": 20, "paymentLink": "", "paymentLinkWithUpsell": "" }
+  ],
+  "upsell": {
+    "enabled": true,
+    "name": "Chaussons dragon assortis",
+    "priceEur": 22.90,
+    "images": ["img/upsell-1.jpg"]
+  },
+  "supportEmail": "contact@example.com",
+  "stripe": {}
+}

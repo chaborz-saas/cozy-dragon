@@ -34,6 +34,9 @@ if ! grep -q '"paymentLink": *"https://' product.json; then
   echo "            Lancez 'npm run stripe:create' puis relancez ./deploy.sh pour l'activer."
 fi
 
+# 0. Métadonnées SEO (title, Open Graph, JSON-LD) générées depuis product.json
+node build-meta.mjs
+
 # 1. Dépôt git
 if [ ! -d .git ]; then
   git init -b main

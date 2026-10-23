@@ -3,20 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mentions légales</title>
+  <title>Mentions légales – Cozy Dragon</title>
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f3d2e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
   <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="./" data-brand>Boutique</a>
-      <a class="header__ig" href="./">← Retour à la boutique</a>
+      <a class="brand" href="./" data-brand-link>
+        <span class="brand__text" data-brand>Cozy Dragon</span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="./">Accueil</a>
+        <a href="./#contact">Contact</a>
+      </nav>
+      <div class="header__right">
+        <a class="social" data-social="instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram" hidden></a>
+        <a class="social" data-social="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" hidden></a>
+        <a class="btn btn--sm header__cta" href="./#buybox">Commander</a>
+      </div>
     </div>
   </header>
 
-  <main class="container legal">
+  <main id="main" class="container page legal">
+    <a class="back-link" href="./">← Retour à la boutique</a>
     <h1>Mentions légales</h1>
 
     <p><mark>[À COMPLÉTER]</mark> Les éléments entre crochets doivent être remplacés avant la mise en ligne. Les mentions ci-dessous sont obligatoires en France (loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique).</p>
@@ -69,17 +84,22 @@
       L'ensemble des contenus de ce site (textes, images, logo) est la propriété de l'éditeur ou de ses partenaires et ne peut être reproduit sans autorisation écrite préalable.
     </p>
 
-    <p><a href="./cgv.html">Consulter les conditions générales de vente</a></p>
+    <p><a href="./cgv.html">Consulter les conditions générales de vente</a> · <a href="./retours.html">Politique de retour</a></p>
   </main>
 
   <footer class="footer">
     <div class="container footer__inner">
-      <p>© <span data-year></span> <span data-brand></span></p>
-      <nav class="footer__links">
-        <a href="./">Boutique</a>
+      <div class="footer__brand">
+        <span class="footer__name" data-brand>Cozy Dragon</span>
+        <p class="footer__tagline" data-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Pages légales">
+        <a href="./mentions-legales.html">Mentions légales</a>
         <a href="./cgv.html">CGV</a>
-        <a href="#" data-email-link>Contact</a>
+        <a href="./retours.html">Politique de retour</a>
+        <a href="./#contact">Contact</a>
       </nav>
+      <p class="footer__copy">© <span data-year></span> <span data-brand>Cozy Dragon</span> · Paiement sécurisé par Stripe</p>
     </div>
   </footer>
 

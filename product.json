@@ -1,10 +1,79 @@
 {
+  "brand": "Cozy Dragon",
   "name": "Dragon Onesie™ – Pyjama dragon noir à capuche",
+  "shortName": "Dragon Onesie",
   "tagline": "Le pyjama dragon ultra-doux qui transforme chaque soirée en film.",
   "description": "Une combinaison polaire oversize avec capuche dragon, yeux brodés et cornes en relief. Pensée pour les soirées canapé, les marathons de films et les nuits d'hiver : chaude, douce, et impossible à enlever une fois enfilée. Unisexe, du S au XXL.",
+  "currency": "eur",
+  "siteUrl": "https://chaborz-saas.github.io/cozy-dragon/",
+
+  "announcement": {
+    "text": "Livraison offerte dès 2 articles · Code DRAGON10 = -10 % · Offre de lancement",
+    "code": "DRAGON10"
+  },
+
+  "rating": {
+    "value": 4.8,
+    "count": "1 200+ avis",
+    "jsonld": false
+  },
+
   "priceEur": 49.90,
   "compareAtEur": 69.90,
-  "currency": "eur",
+
+  "sizes": ["S", "M", "L", "XL", "XXL"],
+  "colors": ["Noir"],
+  "sizingNote": "Taille généreuse : prenez votre taille habituelle ; entre deux, prenez la plus grande.",
+
+  "bundles": [
+    {
+      "id": "b1",
+      "qty": 1,
+      "title": "1 Dragon Onesie",
+      "subtitle": "Prix normal",
+      "discountPct": 0,
+      "badge": "",
+      "perk": "",
+      "default": false,
+      "paymentLink": "",
+      "paymentLinkWithUpsell": ""
+    },
+    {
+      "id": "b2",
+      "qty": 2,
+      "title": "Pack Duo",
+      "subtitle": "-10 % · Livraison offerte",
+      "discountPct": 10,
+      "badge": "Pack de démarrage",
+      "perk": "Livraison offerte",
+      "default": true,
+      "paymentLink": "",
+      "paymentLinkWithUpsell": ""
+    },
+    {
+      "id": "b3",
+      "qty": 3,
+      "title": "Pack Famille",
+      "subtitle": "-20 % · Livraison offerte",
+      "discountPct": 20,
+      "badge": "Le plus populaire",
+      "perk": "Livraison express offerte",
+      "default": false,
+      "paymentLink": "",
+      "paymentLinkWithUpsell": ""
+    }
+  ],
+
+  "upsell": {
+    "enabled": true,
+    "name": "Chaussons dragon assortis",
+    "label": "Ajouter les chaussons dragon assortis",
+    "text": "Même polaire, semelle antidérapante. Le duo complet.",
+    "priceEur": 22.90,
+    "images": ["img/upsell-1.jpg", "img/upsell-2.jpg"],
+    "sizes": ["M (31-38)", "L (39-45)"]
+  },
+
   "images": [
     "img/1.jpg",
     "img/2.jpg",
@@ -12,37 +81,119 @@
     "img/4.jpg",
     "img/5.jpg"
   ],
-  "bullets": [
-    "Polaire épaisse ultra-douce : chaud sans transpirer",
-    "Capuche dragon avec yeux brodés et cornes en relief",
-    "Coupe oversize unisexe, du S au XXL (prendre une taille au-dessus)",
-    "Lavable en machine, ne bouloche pas, ne déteint pas"
+
+  "features": [
+    { "icon": "feather", "label": "Confort", "sub": "Polaire ultra-douce" },
+    { "icon": "layers", "label": "Polyvalent", "sub": "Dormir, traîner, fêter" },
+    { "icon": "sparkles", "label": "Expressif", "sub": "Capuche yeux brodés" }
   ],
-  "faq": [
+
+  "bullets": [
     {
-      "q": "Quels sont les délais de livraison ?",
-      "a": "Votre commande est préparée sous 1 à 3 jours ouvrés puis expédiée avec un numéro de suivi. Comptez 8 à 15 jours ouvrés pour la France et la Belgique, un peu plus pour le reste de l'Europe."
+      "icon": "flame",
+      "title": "Chaud sans transpirer",
+      "text": "Polaire épaisse et respirante : la chaleur d'une couette, sans l'effet sauna. Votre allié d'octobre à avril."
     },
+    {
+      "icon": "eye",
+      "title": "Une capuche qui fait son effet",
+      "text": "Yeux brodés et cornes en relief : le détail qui déclenche les photos à chaque soirée. Personne ne reste de marbre."
+    },
+    {
+      "icon": "users",
+      "title": "Coupe oversize unisexe",
+      "text": "Du S au XXL, pensée pour se lover dedans, bouger, s'affaler. Pour elle, pour lui, pour toute la bande."
+    },
+    {
+      "icon": "wash",
+      "title": "Lavable en machine",
+      "text": "30 °C, ne bouloche pas, ne déteint pas. Il ressort aussi doux qu'au premier jour, lavage après lavage."
+    }
+  ],
+
+  "sizeGuide": {
+    "columns": ["Taille", "Stature", "Poitrine", "Longueur"],
+    "rows": [
+      ["S", "150-160 cm", "84-96 cm", "142 cm"],
+      ["M", "160-170 cm", "92-104 cm", "152 cm"],
+      ["L", "170-180 cm", "100-112 cm", "162 cm"],
+      ["XL", "180-190 cm", "108-120 cm", "172 cm"],
+      ["XXL", "190 cm et +", "116-130 cm", "182 cm"]
+    ],
+    "note": "Mesures indicatives (± 2 cm), vêtement à plat. Entre deux tailles, prenez la plus grande."
+  },
+
+  "slideshow": {
+    "image": "",
+    "title": "Votre nouveau pyjama préféré. Votre nouveau souvenir préféré.",
+    "text": "Soirées films, nuits d'hiver, réveillons en famille : le Dragon Onesie transforme les moments ordinaires en moments qu'on se raconte encore l'année suivante.",
+    "cta": "Je veux le mien"
+  },
+
+  "_note": "Les 3 témoignages ci-dessous sont des EXEMPLES FICTIFS : remplacez-les par de vrais avis clients (ou videz le tableau pour masquer la section) avant la mise en ligne.",
+  "testimonials": [
+    {
+      "name": "Camille R.",
+      "title": "Je ne le quitte plus",
+      "text": "Commandé pour une soirée pyjama, je le porte maintenant tous les soirs. La polaire est vraiment épaisse, on sent que ce n'est pas du bas de gamme. Taille M pour 1 m 68, parfait.",
+      "verified": true
+    },
+    {
+      "name": "Thomas & Léa",
+      "title": "Cadeau de Noël gagnant",
+      "text": "Pris en Pack Duo pour mon frère et moi. Colis arrivé en 10 jours avec le suivi, bien emballé. Les yeux brodés sont encore plus beaux que sur les photos.",
+      "verified": true
+    },
+    {
+      "name": "Inès M.",
+      "title": "Chaud, doux, et il fait rire tout le monde",
+      "text": "Je suis frileuse et c'est le premier pyjama qui me tient vraiment chaud sans me faire transpirer. Lavé trois fois, il n'a pas bougé d'un poil.",
+      "verified": true
+    }
+  ],
+
+  "purchaseProof": {
+    "enabled": false,
+    "text": "🔥 37 personnes ont commandé aujourd'hui"
+  },
+
+  "faq": [
     {
       "q": "Quelle taille choisir ?",
       "a": "La coupe est volontairement oversize. Si vous hésitez entre deux tailles, prenez la plus grande : vous serez plus à l'aise pour vous lover dedans. Guide : S 150-160 cm · M 160-170 cm · L 170-180 cm · XL 180-190 cm · XXL 190 cm et plus."
     },
     {
-      "q": "Puis-je le porter pour dormir ?",
-      "a": "Oui. La polaire est respirante et la coupe ample : parfait pour dormir, traîner à la maison, ou pour une soirée à thème. Il se lave en machine à 30 °C."
+      "q": "Quels sont les délais de livraison ?",
+      "a": "Votre commande est préparée sous 1 à 3 jours ouvrés puis expédiée avec un numéro de suivi. Comptez 8 à 15 jours ouvrés pour la France et la Belgique, un peu plus pour le reste de l'Europe."
     },
     {
       "q": "Puis-je retourner le produit si je change d'avis ?",
       "a": "Oui. Vous disposez de 14 jours après réception pour nous le renvoyer non porté, dans son état d'origine. Écrivez-nous et nous vous indiquons la marche à suivre."
     },
     {
+      "q": "Puis-je le porter pour dormir ?",
+      "a": "Oui. La polaire est respirante et la coupe ample : parfait pour dormir, traîner à la maison, ou pour une soirée à thème. Il se lave en machine à 30 °C."
+    },
+    {
       "q": "Le paiement est-il sécurisé ?",
       "a": "Le paiement est traité par Stripe, leader mondial du paiement en ligne. Vos données bancaires ne transitent jamais par notre site."
+    },
+    {
+      "q": "Convient-il aux enfants et aux ados ?",
+      "a": "La taille S correspond à une stature de 150 à 160 cm : elle convient aux ados et aux adultes de petite taille. En dessous de 150 cm, nous ne proposons pas encore de taille enfant."
     }
   ],
+
+  "shipping": {
+    "processing": "Chaque commande est préparée avec soin sous 1 à 3 jours ouvrés.",
+    "delivery": "Livraison suivie en 8 à 15 jours ouvrés (France, Belgique, Suisse, Luxembourg), un peu plus pour le reste de l'Europe. Le numéro de suivi vous est envoyé par e-mail dès l'expédition.",
+    "returns": "14 jours après réception pour changer d'avis : article non porté, dans son emballage d'origine. Remboursement sous 14 jours sur le moyen de paiement utilisé."
+  },
   "shippingNote": "Expédition sous 1 à 3 jours ouvrés · Livraison suivie en 8 à 15 jours ouvrés",
-  "paymentLink": "",
-  "brand": "Cozy Dragon",
+
   "supportEmail": "contact@example.com",
-  "instagram": ""
+  "instagram": "",
+  "tiktok": "",
+
+  "stripe": {}
 }

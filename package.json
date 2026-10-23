@@ -7,6 +7,8 @@
   "scripts": {
     "stripe:create": "node stripe/create-product.mjs",
     "stripe:dry-run": "node stripe/create-product.mjs --dry-run",
+    "stripe:check": "node stripe/check.mjs",
+    "build:meta": "node build-meta.mjs",
     "serve": "node serve.mjs"
   },
   "engines": {

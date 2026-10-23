@@ -3,102 +3,236 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Boutique</title>
-  <meta name="description" content="">
+  <!-- meta:start -->
+  <title>Dragon Onesie™ – Pyjama dragon noir à capuche – Cozy Dragon</title>
+  <meta name="description" content="Le pyjama dragon ultra-doux qui transforme chaque soirée en film.">
+  <link rel="canonical" href="https://chaborz-saas.github.io/cozy-dragon/">
   <meta property="og:type" content="product">
   <meta property="og:locale" content="fr_FR">
-  <meta property="og:title" content="">
-  <meta property="og:description" content="">
-  <meta property="og:image" content="">
-  <meta property="og:url" content="">
+  <meta property="og:site_name" content="Cozy Dragon">
+  <meta property="og:title" content="Dragon Onesie™ – Pyjama dragon noir à capuche – Cozy Dragon">
+  <meta property="og:description" content="Le pyjama dragon ultra-doux qui transforme chaque soirée en film.">
+  <meta property="og:image" content="https://chaborz-saas.github.io/cozy-dragon/img/1.jpg">
+  <meta property="og:url" content="https://chaborz-saas.github.io/cozy-dragon/">
+  <meta property="product:price:amount" content="49.90">
+  <meta property="product:price:currency" content="EUR">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#1d4ed8">
+  <meta name="twitter:title" content="Dragon Onesie™ – Pyjama dragon noir à capuche – Cozy Dragon">
+  <meta name="twitter:description" content="Le pyjama dragon ultra-doux qui transforme chaque soirée en film.">
+  <meta name="twitter:image" content="https://chaborz-saas.github.io/cozy-dragon/img/1.jpg">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Dragon Onesie™ – Pyjama dragon noir à capuche","description":"Une combinaison polaire oversize avec capuche dragon, yeux brodés et cornes en relief. Pensée pour les soirées canapé, les marathons de films et les nuits d'hiver : chaude, douce, et impossible à enlever une fois enfilée. Unisexe, du S au XXL.","image":["https://chaborz-saas.github.io/cozy-dragon/img/1.jpg","https://chaborz-saas.github.io/cozy-dragon/img/2.jpg","https://chaborz-saas.github.io/cozy-dragon/img/3.jpg","https://chaborz-saas.github.io/cozy-dragon/img/4.jpg","https://chaborz-saas.github.io/cozy-dragon/img/5.jpg"],"brand":{"@type":"Brand","name":"Cozy Dragon"},"color":"Noir","offers":{"@type":"Offer","url":"https://chaborz-saas.github.io/cozy-dragon/","priceCurrency":"EUR","price":"49.90","availability":"https://schema.org/PreOrder","itemCondition":"https://schema.org/NewCondition"}}</script>
+  <!-- meta:end -->
+  <meta name="theme-color" content="#0f3d2e">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f3d2e'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23b7ff3c'/%3E%3Cellipse cx='32' cy='32' rx='4' ry='12' fill='%230b1210'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
-  <header class="header">
+  <a class="skip-link" href="#buybox">Aller à la commande</a>
+
+  <!-- 1. Barre d'annonce -->
+  <div class="announce" id="announce" role="region" aria-label="Offre en cours">
+    <p class="container" id="announce-text"></p>
+  </div>
+
+  <!-- 2. En-tête -->
+  <header class="header" id="top">
     <div class="container header__inner">
-      <a class="brand" href="./" data-brand>Boutique</a>
-      <a id="instagram-link" class="header__ig" href="#" target="_blank" rel="noopener" hidden>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
-        </svg>
-        <span>Instagram</span>
+      <a class="brand" href="./" data-brand-link>
+        <span class="brand__text" data-brand>Cozy Dragon</span>
       </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="./">Accueil</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header__right">
+        <a class="social" data-social="instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram" hidden></a>
+        <a class="social" data-social="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" hidden></a>
+        <a class="btn btn--sm header__cta" href="#buybox">Commander</a>
+      </div>
     </div>
   </header>
 
-  <main class="container" id="main">
-    <p id="load-error" class="notice" hidden></p>
+  <main id="main">
+    <p id="load-error" class="notice container" hidden></p>
 
-    <section class="hero">
-      <div class="gallery">
-        <img id="main-image" class="gallery__main" src="" alt="">
-        <div id="thumbs" class="gallery__thumbs"></div>
+    <!-- 3. Héros produit : galerie + boîte d'achat -->
+    <section class="hero container" aria-labelledby="product-name">
+
+      <div class="gallery" id="gallery" aria-roledescription="carrousel" aria-label="Photos du produit">
+        <div class="gallery__frame">
+          <div class="gallery__track" id="gallery-track" tabindex="0" aria-live="polite"></div>
+          <span class="gallery__pill" id="gallery-pill" hidden></span>
+          <button type="button" class="gallery__arrow gallery__arrow--prev" id="gallery-prev" aria-label="Photo précédente"></button>
+          <button type="button" class="gallery__arrow gallery__arrow--next" id="gallery-next" aria-label="Photo suivante"></button>
+          <span class="gallery__counter" id="gallery-counter" aria-hidden="true"></span>
+        </div>
+        <div class="gallery__thumbs" id="gallery-thumbs" role="tablist" aria-label="Miniatures"></div>
       </div>
 
-      <div class="hero__info">
-        <h1 id="product-name" class="hero__title"></h1>
-        <p id="product-tagline" class="hero__tagline"></p>
-
-        <div class="price">
-          <span id="price" class="price__current"></span>
-          <s id="compare-at" class="price__compare" hidden></s>
-          <span id="discount" class="price__badge" hidden></span>
+      <div class="buybox" id="buybox">
+        <div class="rating" id="rating" hidden>
+          <span class="stars" id="rating-stars" aria-hidden="true"></span>
+          <span class="rating__text" id="rating-text"></span>
         </div>
 
-        <a id="buy-btn" class="btn btn--primary btn--lg" href="#">Acheter maintenant</a>
-        <p id="shipping-note" class="hero__shipping"></p>
+        <h1 class="buybox__title" id="product-name"></h1>
+        <p class="buybox__tagline" id="product-tagline"></p>
 
-        <ul id="bullets" class="bullets"></ul>
+        <div class="price-row" aria-label="Prix">
+          <span class="price__now" id="price"></span>
+          <s class="price__was" id="compare-at" hidden></s>
+          <span class="pill pill--acid" id="discount" hidden></span>
+        </div>
+
+        <p class="sizing-note" id="sizing-note" hidden></p>
+
+        <div class="bundle-section">
+          <p class="eyebrow eyebrow--line" id="bundle-label">Bundle &amp; économisez</p>
+          <div class="bundles" id="bundles" role="radiogroup" aria-labelledby="bundle-label"></div>
+        </div>
+
+        <div class="upsell" id="upsell" hidden></div>
+
+        <ul class="features" id="features" aria-label="Points forts"></ul>
+
+        <div class="subtotal" aria-live="polite">
+          <span>Sous-total</span>
+          <strong id="subtotal"></strong>
+        </div>
+
+        <button type="button" class="btn btn--cta" id="cta">
+          <span id="cta-label">Commander</span>
+        </button>
+        <p class="secure">
+          <span class="secure__icon" aria-hidden="true"></span>
+          Paiement sécurisé Stripe · Visa, Mastercard, Apple Pay
+        </p>
+
+        <p class="proof" id="proof" hidden></p>
+
+        <div class="acc acc--buybox" id="buybox-acc"></div>
+      </div>
+
+      <!-- Bandeau de réassurance -->
+      <ul class="trust" aria-label="Garanties">
+        <li class="trust__item"><span class="trust__icon" data-icon="lock"></span><span><strong>Paiement sécurisé</strong><small>Stripe · 3D Secure</small></span></li>
+        <li class="trust__item"><span class="trust__icon" data-icon="truck"></span><span><strong>Livraison suivie</strong><small>Numéro de suivi par e-mail</small></span></li>
+        <li class="trust__item"><span class="trust__icon" data-icon="undo"></span><span><strong>Retours 14 jours</strong><small>Satisfait ou remboursé</small></span></li>
+        <li class="trust__item"><span class="trust__icon" data-icon="headset"></span><span><strong>Service client FR</strong><small>Réponse sous 24 h ouvrées</small></span></li>
+      </ul>
+    </section>
+
+    <!-- 4. Section éditoriale plein écran -->
+    <section class="editorial" id="editorial" aria-labelledby="editorial-title">
+      <img class="editorial__img" id="editorial-img" src="" alt="" width="1600" height="1000" loading="lazy" hidden>
+      <div class="editorial__content container">
+        <h2 class="editorial__title" id="editorial-title"></h2>
+        <p class="editorial__text" id="editorial-text"></p>
+        <a class="btn btn--acid btn--lg" id="editorial-cta" href="#buybox"></a>
       </div>
     </section>
 
-    <section class="section">
-      <h2>Description</h2>
-      <p id="product-description" class="description"></p>
-    </section>
-
-    <section class="reassurance" aria-label="Garanties">
-      <div class="reassurance__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <div><strong>Paiement sécurisé</strong><span>par Stripe</span></div>
-      </div>
-      <div class="reassurance__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <div><strong>Livraison suivie</strong><span>numéro de suivi par e-mail</span></div>
-      </div>
-      <div class="reassurance__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
-        <div><strong>Retours 14 jours</strong><span>satisfait ou remboursé</span></div>
+    <!-- 5. Bénéfices -->
+    <section class="benefits" aria-labelledby="benefits-title">
+      <div class="container">
+        <p class="eyebrow eyebrow--center">Pensé pour les soirées qui comptent</p>
+        <h2 class="section__title" id="benefits-title">Pourquoi vous allez l'adorer</h2>
+        <p class="section__lead" id="product-description"></p>
+        <div class="benefits__grid" id="benefits"></div>
       </div>
     </section>
 
-    <section class="section">
-      <h2>Questions fréquentes</h2>
-      <div id="faq" class="faq"></div>
+    <!-- 6. Témoignages -->
+    <section class="testimonials" id="testimonials" aria-labelledby="testimonials-title" hidden>
+      <div class="container">
+        <p class="eyebrow eyebrow--center eyebrow--light">Ils ont déjà craqué</p>
+        <h2 class="section__title" id="testimonials-title">Rejoignez nos clients heureux</h2>
+        <div class="testimonials__grid" id="testimonials-grid"></div>
+      </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section class="faq" id="faq-section" aria-labelledby="faq-title">
+      <div class="container container--narrow">
+        <p class="eyebrow eyebrow--center">On répond à tout</p>
+        <h2 class="section__title" id="faq-title">Questions fréquentes</h2>
+        <div class="acc acc--numbered" id="faq"></div>
+      </div>
+    </section>
+
+    <!-- 8. Contact -->
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="container contact__inner">
+        <div class="contact__intro">
+          <p class="eyebrow">Service client</p>
+          <h2 class="section__title section__title--left" id="contact-title">Une question ? Écrivez-nous</h2>
+          <p>Une hésitation sur la taille, une commande à suivre, une idée de cadeau ? On vous répond en français, sous 24 h ouvrées.</p>
+          <p class="contact__email"><a href="#" data-email-link><span data-email></span></a></p>
+          <div class="contact__social">
+            <a class="social social--lg" data-social="instagram" href="#" target="_blank" rel="noopener" hidden><span data-icon="instagram"></span> Instagram</a>
+            <a class="social social--lg" data-social="tiktok" href="#" target="_blank" rel="noopener" hidden><span data-icon="tiktok"></span> TikTok</a>
+          </div>
+        </div>
+        <form class="form" id="contact-form" novalidate>
+          <div class="form__row">
+            <label class="field">
+              <span>Votre nom</span>
+              <input type="text" name="name" autocomplete="name" required>
+            </label>
+            <label class="field">
+              <span>Votre e-mail</span>
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+          </div>
+          <label class="field">
+            <span>Votre message</span>
+            <textarea name="message" rows="5" required></textarea>
+          </label>
+          <button type="submit" class="btn btn--primary">Envoyer le message</button>
+          <p class="form__hint" id="form-hint" aria-live="polite">Votre application e-mail s'ouvrira avec le message pré-rempli.</p>
+        </form>
+      </div>
     </section>
   </main>
 
+  <!-- 9. Pied de page -->
   <footer class="footer">
     <div class="container footer__inner">
-      <p>© <span data-year></span> <span data-brand></span></p>
-      <nav class="footer__links">
+      <div class="footer__brand">
+        <span class="footer__name" data-brand>Cozy Dragon</span>
+        <p class="footer__tagline" data-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Pages légales">
         <a href="./mentions-legales.html">Mentions légales</a>
         <a href="./cgv.html">CGV</a>
-        <a href="#" data-email-link>Contact</a>
+        <a href="./retours.html">Politique de retour</a>
+        <a href="#contact">Contact</a>
       </nav>
+      <p class="footer__copy">© <span data-year></span> <span data-brand>Cozy Dragon</span> · Paiement sécurisé par Stripe</p>
     </div>
   </footer>
 
-  <div id="sticky-bar" class="sticky-bar" aria-hidden="true">
-    <div class="sticky-bar__price">
-      <span id="sticky-price"></span>
-      <small data-brand></small>
+  <!-- 10. Barre d'achat fixe (mobile) -->
+  <div class="sticky-bar" id="sticky-bar" aria-hidden="true">
+    <div class="sticky-bar__info">
+      <strong id="sticky-price"></strong>
+      <small id="sticky-label"></small>
     </div>
-    <a id="sticky-buy" class="btn btn--primary" href="#">Acheter</a>
+    <button type="button" class="btn btn--primary sticky-bar__btn" id="sticky-cta">Commander</button>
   </div>
+
+  <!-- Visionneuse plein écran -->
+  <dialog class="lightbox" id="lightbox" aria-label="Photo en grand">
+    <button type="button" class="lightbox__close" id="lightbox-close" aria-label="Fermer"></button>
+    <button type="button" class="lightbox__arrow lightbox__arrow--prev" id="lightbox-prev" aria-label="Photo précédente"></button>
+    <img class="lightbox__img" id="lightbox-img" src="" alt="" width="1200" height="1200">
+    <button type="button" class="lightbox__arrow lightbox__arrow--next" id="lightbox-next" aria-label="Photo suivante"></button>
+    <span class="lightbox__counter" id="lightbox-counter"></span>
+  </dialog>
 
   <script src="./app.js"></script>
 </body>

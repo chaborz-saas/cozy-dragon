@@ -3,20 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Conditions générales de vente</title>
+  <title>Conditions générales de vente – Cozy Dragon</title>
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f3d2e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
   <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="./" data-brand>Boutique</a>
-      <a class="header__ig" href="./">← Retour à la boutique</a>
+      <a class="brand" href="./" data-brand-link>
+        <span class="brand__text" data-brand>Cozy Dragon</span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="./">Accueil</a>
+        <a href="./#contact">Contact</a>
+      </nav>
+      <div class="header__right">
+        <a class="social" data-social="instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram" hidden></a>
+        <a class="social" data-social="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" hidden></a>
+        <a class="btn btn--sm header__cta" href="./#buybox">Commander</a>
+      </div>
     </div>
   </header>
 
-  <main class="container legal">
+  <main id="main" class="container page legal">
+    <a class="back-link" href="./">← Retour à la boutique</a>
     <h1>Conditions générales de vente</h1>
 
     <p><mark>[À COMPLÉTER]</mark> Modèle générique à adapter à votre activité. Les éléments entre crochets doivent être remplacés avant la mise en ligne. Dernière mise à jour : <mark>[À COMPLÉTER : date]</mark>.</p>
@@ -41,7 +56,7 @@
 
     <h2>Article 4 – Commande</h2>
     <p>
-      Le Client valide sa commande en cliquant sur « Acheter maintenant », puis en complétant le formulaire de paiement sécurisé opéré par Stripe.
+      Le Client valide sa commande en cliquant sur « Commander », puis en complétant le formulaire de paiement sécurisé opéré par Stripe.
       Une confirmation de commande est envoyée par e-mail à l'adresse indiquée. Le Vendeur se réserve le droit d'annuler toute commande en cas de litige antérieur ou de suspicion de fraude.
     </p>
 
@@ -89,17 +104,22 @@
       Il peut également utiliser la plateforme européenne de règlement en ligne des litiges : <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.
     </p>
 
-    <p><a href="./mentions-legales.html">Consulter les mentions légales</a></p>
+    <p><a href="./mentions-legales.html">Consulter les mentions légales</a> · <a href="./retours.html">Politique de retour</a></p>
   </main>
 
   <footer class="footer">
     <div class="container footer__inner">
-      <p>© <span data-year></span> <span data-brand></span></p>
-      <nav class="footer__links">
-        <a href="./">Boutique</a>
+      <div class="footer__brand">
+        <span class="footer__name" data-brand>Cozy Dragon</span>
+        <p class="footer__tagline" data-tagline></p>
+      </div>
+      <nav class="footer__links" aria-label="Pages légales">
         <a href="./mentions-legales.html">Mentions légales</a>
-        <a href="#" data-email-link>Contact</a>
+        <a href="./cgv.html">CGV</a>
+        <a href="./retours.html">Politique de retour</a>
+        <a href="./#contact">Contact</a>
       </nav>
+      <p class="footer__copy">© <span data-year></span> <span data-brand>Cozy Dragon</span> · Paiement sécurisé par Stripe</p>
     </div>
   </footer>
 
