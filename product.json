@@ -1,199 +1,362 @@
 {
   "brand": "Cozy Dragon",
-  "name": "Dragon Onesie™ – Pyjama dragon noir à capuche",
+  "name": "Dragon Onesie™",
   "shortName": "Dragon Onesie",
   "tagline": "Le pyjama dragon ultra-doux qui transforme chaque soirée en film.",
-  "description": "Une combinaison polaire oversize avec capuche dragon, yeux brodés et cornes en relief. Pensée pour les soirées canapé, les marathons de films et les nuits d'hiver : chaude, douce, et impossible à enlever une fois enfilée. Unisexe, du S au XXL.",
+  "description": "Une combinaison polaire oversize avec capuche dragon, yeux brodés et cornes en relief. Pensée pour les soirées canapé, les marathons de films et les nuits d'hiver : chaude, douce, et impossible à enlever une fois enfilée. Unisexe, du S au XL.",
   "currency": "eur",
   "siteUrl": "https://chaborz-saas.github.io/cozy-dragon/",
-
-  "announcement": {
-    "text": "Livraison offerte dès 2 articles · Code DRAGON10 = -10 % · Offre de lancement",
-    "code": "DRAGON10"
+  "demo": {
+    "strip": "Démo interne — images de référence, non commercial"
   },
-
+  "announcement": {
+    "text": "OFFRE DE LANCEMENT   ·   CODE DRAGON10 = -10 % SUR VOTRE PREMIÈRE COMMANDE   ·   LIVRAISON OFFERTE DÈS 100 €",
+    "code": "DRAGON10",
+    "repeat": 6
+  },
   "rating": {
-    "value": 4.8,
-    "count": "1 200+ avis",
+    "value": 5,
+    "count": "10 000+",
     "jsonld": false
   },
-
-  "priceEur": 49.90,
-  "compareAtEur": 69.90,
-
-  "sizes": ["S", "M", "L", "XL", "XXL"],
-  "colors": ["Noir"],
-  "sizingNote": "Taille généreuse : prenez votre taille habituelle ; entre deux, prenez la plus grande.",
-
+  "priceEur": 54.95,
+  "compareAtEur": 41.65,
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "colors": [
+    "Blanc",
+    "Noir"
+  ],
+  "sizingNote": "*Il est recommandé de prendre deux tailles au-dessus*",
   "bundles": [
     {
       "id": "b1",
       "qty": 1,
-      "title": "1 Dragon Onesie",
+      "title": "Acheter 1",
       "subtitle": "Prix normal",
+      "text": "",
       "discountPct": 0,
+      "compareAtEur": 41.65,
       "badge": "",
-      "perk": "",
-      "default": false,
+      "badgeStyle": "",
+      "gift": "",
+      "giftTag": "",
+      "default": true,
       "paymentLink": "",
       "paymentLinkWithUpsell": ""
     },
     {
       "id": "b2",
       "qty": 2,
-      "title": "Pack Duo",
-      "subtitle": "-10 % · Livraison offerte",
+      "title": "Acheter 2, économisez 10 %",
+      "subtitle": "Pack de démarrage",
+      "text": "Doublez et profitez d'une remise immédiate",
       "discountPct": 10,
+      "compareAtEur": 83.32,
       "badge": "Pack de démarrage",
-      "perk": "Livraison offerte",
-      "default": true,
+      "badgeStyle": "dark",
+      "gift": "",
+      "giftTag": "",
+      "default": false,
       "paymentLink": "",
       "paymentLinkWithUpsell": ""
     },
     {
       "id": "b3",
       "qty": 3,
-      "title": "Pack Famille",
-      "subtitle": "-20 % · Livraison offerte",
+      "title": "Acheter 3, économisez 20 %",
+      "subtitle": "Le plus populaire",
+      "text": "La plupart des clients choisissent cette offre !",
       "discountPct": 20,
+      "compareAtEur": 124.98,
       "badge": "Le plus populaire",
-      "perk": "Livraison express offerte",
+      "badgeStyle": "green",
+      "gift": "Cadeau exclusif : sélectionnez l'offre pour débloquer les cadeaux",
+      "giftTag": "GRATUIT !!",
       "default": false,
       "paymentLink": "",
       "paymentLinkWithUpsell": ""
     }
   ],
-
+  "bundleLabel": "BUNDLE & ÉCONOMISEZ",
   "upsell": {
     "enabled": true,
-    "name": "Chaussons dragon assortis",
-    "label": "Ajouter les chaussons dragon assortis",
-    "text": "Même polaire, semelle antidérapante. Le duo complet.",
-    "priceEur": 22.90,
-    "images": ["img/upsell-1.jpg", "img/upsell-2.jpg"],
-    "sizes": ["M (31-38)", "L (39-45)"]
-  },
-
-  "images": [
-    "img/1.jpg",
-    "img/2.jpg",
-    "img/3.jpg",
-    "img/4.jpg",
-    "img/5.jpg"
-  ],
-
-  "features": [
-    { "icon": "feather", "label": "Confort", "sub": "Polaire ultra-douce" },
-    { "icon": "layers", "label": "Polyvalent", "sub": "Dormir, traîner, fêter" },
-    { "icon": "sparkles", "label": "Expressif", "sub": "Capuche yeux brodés" }
-  ],
-
-  "bullets": [
-    {
-      "icon": "flame",
-      "title": "Chaud sans transpirer",
-      "text": "Polaire épaisse et respirante : la chaleur d'une couette, sans l'effet sauna. Votre allié d'octobre à avril."
-    },
-    {
-      "icon": "eye",
-      "title": "Une capuche qui fait son effet",
-      "text": "Yeux brodés et cornes en relief : le détail qui déclenche les photos à chaque soirée. Personne ne reste de marbre."
-    },
-    {
-      "icon": "users",
-      "title": "Coupe oversize unisexe",
-      "text": "Du S au XXL, pensée pour se lover dedans, bouger, s'affaler. Pour elle, pour lui, pour toute la bande."
-    },
-    {
-      "icon": "wash",
-      "title": "Lavable en machine",
-      "text": "30 °C, ne bouloche pas, ne déteint pas. Il ressort aussi doux qu'au premier jour, lavage après lavage."
-    }
-  ],
-
-  "sizeGuide": {
-    "columns": ["Taille", "Stature", "Poitrine", "Longueur"],
-    "rows": [
-      ["S", "150-160 cm", "84-96 cm", "142 cm"],
-      ["M", "160-170 cm", "92-104 cm", "152 cm"],
-      ["L", "170-180 cm", "100-112 cm", "162 cm"],
-      ["XL", "180-190 cm", "108-120 cm", "172 cm"],
-      ["XXL", "190 cm et +", "116-130 cm", "182 cm"]
+    "product": "slippers",
+    "name": "Chaussons Cozy Dragon assortis",
+    "label": "Chaussons Cozy Dragon assortis",
+    "text": "",
+    "priceEur": 22.95,
+    "image": "img/demo/slippers-1.jpg",
+    "images": [
+      "img/demo/slippers-1.jpg"
     ],
-    "note": "Mesures indicatives (± 2 cm), vêtement à plat. Entre deux tailles, prenez la plus grande."
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sizeHint": "(voir guide des tailles)"
   },
-
-  "slideshow": {
-    "image": "",
-    "title": "Votre nouveau pyjama préféré. Votre nouveau souvenir préféré.",
-    "text": "Soirées films, nuits d'hiver, réveillons en famille : le Dragon Onesie transforme les moments ordinaires en moments qu'on se raconte encore l'année suivante.",
-    "cta": "Je veux le mien"
+  "images": [
+    "img/demo/onesie-1.jpg",
+    "img/demo/onesie-2.jpg",
+    "img/demo/onesie-3.jpg",
+    "img/demo/onesie-4.jpg",
+    "img/demo/onesie-5.jpg",
+    "img/demo/onesie-6.jpg",
+    "img/demo/onesie-7.jpg",
+    "img/demo/onesie-8.jpg"
+  ],
+  "thumbnail": "img/demo/bundle-thumb.jpg",
+  "sizeChart": "img/demo/size-chart.png",
+  "home": {
+    "label": "Produit vedette",
+    "vendor": "Cozy Dragon",
+    "imageCount": 6,
+    "addToCart": "Ajouter au panier",
+    "payWithStripe": "Payer avec Stripe",
+    "moreOptions": "Plus d'options de paiement"
   },
-
-  "_note": "Les 3 témoignages ci-dessous sont des EXEMPLES FICTIFS : remplacez-les par de vrais avis clients (ou videz le tableau pour masquer la section) avant la mise en ligne.",
-  "testimonials": [
+  "features": [
     {
-      "name": "Camille R.",
-      "title": "Je ne le quitte plus",
-      "text": "Commandé pour une soirée pyjama, je le porte maintenant tous les soirs. La polaire est vraiment épaisse, on sent que ce n'est pas du bas de gamme. Taille M pour 1 m 68, parfait.",
-      "verified": true
+      "icon": "check",
+      "label": "Confort"
     },
     {
-      "name": "Thomas & Léa",
-      "title": "Cadeau de Noël gagnant",
-      "text": "Pris en Pack Duo pour mon frère et moi. Colis arrivé en 10 jours avec le suivi, bien emballé. Les yeux brodés sont encore plus beaux que sur les photos.",
-      "verified": true
+      "icon": "check",
+      "label": "Polyvalent"
     },
     {
-      "name": "Inès M.",
-      "title": "Chaud, doux, et il fait rire tout le monde",
-      "text": "Je suis frileuse et c'est le premier pyjama qui me tient vraiment chaud sans me faire transpirer. Lavé trois fois, il n'a pas bougé d'un poil.",
-      "verified": true
+      "icon": "check",
+      "label": "Expressif"
     }
   ],
-
   "purchaseProof": {
-    "enabled": false,
-    "text": "🔥 37 personnes ont commandé aujourd'hui"
+    "enabled": true,
+    "avatar": "img/demo/avatar-1.jpg",
+    "text": "Sarah et 438 personnes ont acheté"
   },
-
-  "faq": [
+  "buyboxAccordion": {
+    "sizeGuideTitle": "Guide des tailles du onesie",
+    "faqTitle": "Questions fréquentes",
+    "shippingTitle": "Préparation & livraison"
+  },
+  "buyboxFaq": [
     {
       "q": "Quelle taille choisir ?",
-      "a": "La coupe est volontairement oversize. Si vous hésitez entre deux tailles, prenez la plus grande : vous serez plus à l'aise pour vous lover dedans. Guide : S 150-160 cm · M 160-170 cm · L 170-180 cm · XL 180-190 cm · XXL 190 cm et plus."
+      "a": "La coupe est volontairement oversize et le tissu ne s'étire pas : nous recommandons de prendre deux tailles au-dessus de votre taille habituelle. Consultez le guide des tailles ci-dessus."
     },
     {
-      "q": "Quels sont les délais de livraison ?",
-      "a": "Votre commande est préparée sous 1 à 3 jours ouvrés puis expédiée avec un numéro de suivi. Comptez 8 à 15 jours ouvrés pour la France et la Belgique, un peu plus pour le reste de l'Europe."
+      "q": "Peut-on le laver en machine ?",
+      "a": "Oui, à 30 °C, cycle délicat, sans sèche-linge. Il ressort aussi doux qu'au premier jour."
     },
     {
-      "q": "Puis-je retourner le produit si je change d'avis ?",
-      "a": "Oui. Vous disposez de 14 jours après réception pour nous le renvoyer non porté, dans son état d'origine. Écrivez-nous et nous vous indiquons la marche à suivre."
-    },
-    {
-      "q": "Puis-je le porter pour dormir ?",
-      "a": "Oui. La polaire est respirante et la coupe ample : parfait pour dormir, traîner à la maison, ou pour une soirée à thème. Il se lave en machine à 30 °C."
-    },
-    {
-      "q": "Le paiement est-il sécurisé ?",
-      "a": "Le paiement est traité par Stripe, leader mondial du paiement en ligne. Vos données bancaires ne transitent jamais par notre site."
-    },
-    {
-      "q": "Convient-il aux enfants et aux ados ?",
-      "a": "La taille S correspond à une stature de 150 à 160 cm : elle convient aux ados et aux adultes de petite taille. En dessous de 150 cm, nous ne proposons pas encore de taille enfant."
+      "q": "Convient-il aux adultes ?",
+      "a": "Oui : le Dragon Onesie™ est un modèle adulte unisexe, du S au XL. Pour un enfant, choisissez la taille S."
     }
   ],
-
   "shipping": {
-    "processing": "Chaque commande est préparée avec soin sous 1 à 3 jours ouvrés.",
-    "delivery": "Livraison suivie en 8 à 15 jours ouvrés (France, Belgique, Suisse, Luxembourg), un peu plus pour le reste de l'Europe. Le numéro de suivi vous est envoyé par e-mail dès l'expédition.",
-    "returns": "14 jours après réception pour changer d'avis : article non porté, dans son emballage d'origine. Remboursement sous 14 jours sur le moyen de paiement utilisé."
+    "processing": "Chaque commande est préparée sous 1 à 4 jours ouvrés.",
+    "international": "International : 7 à 14 jours ouvrés.",
+    "france": "France : 6 à 12 jours ouvrés.",
+    "delivery": "Livraison suivie : France 6 à 12 jours ouvrés, international 7 à 14 jours ouvrés. Le numéro de suivi vous est envoyé par e-mail dès l'expédition.",
+    "returns": "14 jours après réception pour changer d'avis : article non porté, dans son emballage d'origine."
   },
-  "shippingNote": "Expédition sous 1 à 3 jours ouvrés · Livraison suivie en 8 à 15 jours ouvrés",
-
+  "slideshow": {
+    "slides": [
+      "img/demo/loop-1.gif",
+      "img/demo/loop-2.gif",
+      "img/demo/loop-3.gif"
+    ],
+    "title": "Your new favorite onesie, your new favorite memory",
+    "text": "Built for laughs, movie nights, and cozy moments you’ll keep talking about.",
+    "cta": "Get yours :)"
+  },
+  "tiktok": {
+    "title": "Vu sur TikTok",
+    "subtitle": "17 millions de vues en organique",
+    "videos": [
+      {
+        "id": "7674113155760442655",
+        "views": "10,4 M vues",
+        "src": "img/demo/tiktok/tiktok-1.mp4",
+        "url": "https://www.tiktok.com/@snug_scale.official/video/7674113155760442655"
+      },
+      {
+        "id": "7674142626014170399",
+        "views": "3,5 M vues",
+        "src": "img/demo/tiktok/tiktok-2.mp4",
+        "url": "https://www.tiktok.com/@snug_scale.official/video/7674142626014170399"
+      },
+      {
+        "id": "7673028585069808927",
+        "views": "3,2 M vues",
+        "src": "img/demo/tiktok/tiktok-3.mp4",
+        "url": "https://www.tiktok.com/@snug_scale.official/video/7673028585069808927"
+      }
+    ]
+  },
+  "testimonialsTitle": "Rejoignez plus de 10 000 clients heureux",
+  "testimonialsPill": "10 000+ clients",
+  "testimonials": [
+    {
+      "name": "Paige staterman",
+      "avatar": "img/demo/avatar-1.jpg",
+      "title": "NO REGRETS",
+      "text": "Way warmer than I expected and ridiculously soft. I’ve basically been living in it every night. My boyfriend keeps laughing every time I pull the hood over my face, but now he wants one too 😂🐉",
+      "verified": true
+    },
+    {
+      "name": "Mike B",
+      "avatar": "img/demo/avatar-2.jpg",
+      "title": "the best gift",
+      "text": "I got this for my daughter because she’s a huge How to Train Your Dragon fan, and it ended up being the perfect gift. The second she saw it, she lit up. It’s unbelievably soft, super warm, and she didn’t want to take it off all night. She ran around the house pretending to be a dragon and had us all laughing. Honestly one of those gifts that’s both cozy and memorable.",
+      "verified": true
+    },
+    {
+      "name": "Alyssa and Jordan",
+      "avatar": "img/demo/avatar-3.jpg",
+      "title": "Best use of adult money LOL",
+      "text": "My partner and I both got one, and now they’re officially our movie night uniform 😂 They’re insanely soft, really warm, and oversized in the best way. We threw them on for a stay-in night and ended up laughing the whole time, taking pictures, and fully committing to the cozy dragon look. Such a fun purchase, and somehow still one of the most comfortable things we own.",
+      "verified": true
+    }
+  ],
+  "faqTitle": "Questions fréquentes",
+  "faqSubtitle": "Trouvez rapidement des réponses aux questions les plus courantes sur notre produit.",
+  "faq": [
+    {
+      "q": "Convient-il pour dormir ?",
+      "a": "Oui. La polaire est respirante et la coupe ample : parfait pour dormir, traîner à la maison ou pour une soirée film. La capuche se rabat sans gêner et le tissu reste doux lavage après lavage."
+    },
+    {
+      "q": "Est-ce que la taille convient aux adultes ?",
+      "a": "Oui, le Dragon Onesie™ est un modèle adulte unisexe du S au XL. La coupe est oversize mais le tissu ne s'étire pas : nous recommandons de prendre deux tailles au-dessus de votre taille habituelle (voir le guide des tailles)."
+    },
+    {
+      "q": "Est-il durable ?",
+      "a": "Oui. Polaire épaisse double face, coutures renforcées, fermeture à glissière métal. Il se lave en machine à 30 °C et ne bouloche pas."
+    },
+    {
+      "q": "Est-il adapté aux soirées et au cosplay ?",
+      "a": "Complètement. Soirées pyjama, Halloween, conventions, cosplay ou simple soirée canapé : la capuche aux yeux brodés et aux cornes en relief fait son effet partout."
+    }
+  ],
+  "contact": {
+    "title": "Écrivez-nous à tout moment",
+    "text": "Une question sur la taille, une commande à suivre, une idée de cadeau ? Nous répondons en français, sous 24 h ouvrées.",
+    "submit": "Envoyer le message"
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": "Votre panier est vide",
+    "continue": "Continuer vos achats",
+    "subtotal": "Sous-total",
+    "note": "Taxes et frais de port calculés à l'étape suivante",
+    "checkout": "Commander",
+    "soon": "Paiement bientôt disponible",
+    "discountLabel": "Remise pack",
+    "closestNote": "Démo : cette combinaison n'a pas de lien Stripe dédié, le pack le plus proche est utilisé.",
+    "protection": {
+      "enabled": true,
+      "icon": "img/demo/shield.png",
+      "title": "Protection d'expédition",
+      "text": "Protégez votre colis contre la perte, le vol ou les dommages.",
+      "priceEur": 2.95
+    }
+  },
+  "cookies": {
+    "title": "Consentement aux cookies",
+    "text": "Ce site utilise des cookies pour garantir le bon fonctionnement de la boutique, mesurer l'audience et personnaliser votre expérience. Vous pouvez accepter, refuser ou gérer vos préférences.",
+    "manage": "Gérer les préférences",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "save": "Enregistrer les préférences"
+  },
+  "footer": {
+    "heading": "Conditions et politiques",
+    "links": [
+      {
+        "label": "Politique de confidentialité",
+        "href": "politique-de-confidentialite.html"
+      },
+      {
+        "label": "Mentions légales",
+        "href": "mentions-legales.html"
+      },
+      {
+        "label": "CGV",
+        "href": "cgv.html"
+      },
+      {
+        "label": "Retours",
+        "href": "retours.html"
+      },
+      {
+        "label": "Préférences cookies",
+        "href": "#cookies"
+      }
+    ]
+  },
+  "products": {
+    "onesie": {
+      "id": "onesie",
+      "page": "produit.html",
+      "name": "Dragon Onesie™",
+      "priceEur": 54.95,
+      "compareAtEur": 41.65,
+      "image": "img/demo/bundle-thumb.jpg"
+    },
+    "slippers": {
+      "id": "slippers",
+      "page": "chaussons.html",
+      "name": "Chaussons Cozy Dragon assortis™",
+      "priceEur": 22.95,
+      "compareAtEur": 35.99,
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "sizeHint": "(voir guide)",
+      "sizeGuide": "S : 35-38 · M : 39-42 · L : 43-46",
+      "images": [
+        "img/demo/slippers-1.jpg"
+      ],
+      "image": "img/demo/slippers-1.jpg",
+      "description": "Les chaussons assortis au Dragon Onesie™ : même polaire ultra-douce, semelle antidérapante, griffes brodées. Pour compléter la tenue des soirées cosy.",
+      "bullets": [
+        "Polaire double face",
+        "Semelle antidérapante",
+        "Lavables en machine à 30 °C"
+      ],
+      "paymentLink": ""
+    },
+    "keychain": {
+      "id": "keychain",
+      "page": "porte-cles.html",
+      "name": "Porte-clés Cozy Dragon",
+      "priceEur": 14.99,
+      "compareAtEur": 0,
+      "sizes": [],
+      "images": [
+        "img/demo/keychain-1.jpg"
+      ],
+      "image": "img/demo/keychain-1.jpg",
+      "description": "Le petit dragon en peluche à accrocher à vos clés ou à votre sac. Idéal en cadeau, ou pour se souvenir qu'un onesie vous attend à la maison.",
+      "bullets": [
+        "Peluche douce, 10 cm",
+        "Mousqueton métal",
+        "Cadeau parfait"
+      ],
+      "paymentLink": ""
+    }
+  },
   "supportEmail": "contact@example.com",
   "instagram": "",
-  "tiktok": "",
-
+  "tiktokUrl": "",
   "stripe": {}
 }
