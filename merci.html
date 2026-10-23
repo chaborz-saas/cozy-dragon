@@ -85,18 +85,14 @@
   <!-- Pied de page -->
   <footer class="footer">
     <div class="container">
-      <h2 class="footer__heading">Conditions et politiques</h2>
-      <nav class="footer__links" aria-label="Conditions et politiques" data-footer-links>
+      <button type="button" class="footer__trigger" id="footer-trigger" aria-expanded="false" aria-controls="footer-links" data-footer-trigger>Terms and Policies</button>
+      <nav class="footer__links" id="footer-links" aria-label="Terms and Policies" data-footer-links hidden>
         <a href="./politique-de-confidentialite.html">Politique de confidentialité</a>
         <a href="./mentions-legales.html">Mentions légales</a>
         <a href="./cgv.html">CGV</a>
         <a href="./retours.html">Retours</a>
         <a href="#cookies" data-cookie-prefs>Préférences cookies</a>
       </nav>
-      <div class="footer__bottom">
-        <div class="payments" data-payments aria-label="Moyens de paiement acceptés"></div>
-        <p class="footer__copy">© <span data-year>2026</span> <span data-brand>Cozy Dragon</span></p>
-      </div>
     </div>
   </footer>
 

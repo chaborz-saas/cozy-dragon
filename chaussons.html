@@ -56,6 +56,7 @@
 
     <section class="product container" aria-labelledby="sp-name">
       <div class="product__grid">
+        <div class="product__media">
 
       <div class="gallery" id="sp-gallery" aria-roledescription="carrousel" aria-label="Photos du produit">
         <div class="gallery__frame">
@@ -65,7 +66,9 @@
           <span class="gallery__counter" aria-hidden="true"></span>
         </div>
         <div class="gallery__thumbs" role="tablist" aria-label="Miniatures"></div>
+        <div class="gallery__dots" aria-label="Choisir une photo"></div>
       </div>
+        </div>
         <div class="buybox" id="buybox">
           <p class="buybox__vendor" data-brand>Cozy Dragon</p>
           <h1 class="buybox__title buybox__title--lg" id="sp-name">Chaussons Cozy Dragon assortis™</h1>
@@ -99,25 +102,30 @@
   <!-- Pied de page -->
   <footer class="footer">
     <div class="container">
-      <h2 class="footer__heading">Conditions et politiques</h2>
-      <nav class="footer__links" aria-label="Conditions et politiques" data-footer-links>
+      <button type="button" class="footer__trigger" id="footer-trigger" aria-expanded="false" aria-controls="footer-links" data-footer-trigger>Terms and Policies</button>
+      <nav class="footer__links" id="footer-links" aria-label="Terms and Policies" data-footer-links hidden>
         <a href="./politique-de-confidentialite.html">Politique de confidentialité</a>
         <a href="./mentions-legales.html">Mentions légales</a>
         <a href="./cgv.html">CGV</a>
         <a href="./retours.html">Retours</a>
         <a href="#cookies" data-cookie-prefs>Préférences cookies</a>
       </nav>
-      <div class="footer__bottom">
-        <div class="payments" data-payments aria-label="Moyens de paiement acceptés"></div>
-        <p class="footer__copy">© <span data-year>2026</span> <span data-brand>Cozy Dragon</span></p>
-      </div>
     </div>
   </footer>
 
-  <!-- Bouton d'achat flottant (desktop) / barre fixe (mobile) -->
+  <!-- Barre d'achat flottante (remplie par app.js → setupStickyBar) -->
   <div class="sticky-bar" id="sticky-bar" aria-hidden="true">
-    <div class="sticky-bar__info"><strong id="sticky-price"></strong><small id="sticky-label"></small></div>
-    <button type="button" class="btn sticky-bar__btn" id="sticky-cta">Ajouter au panier</button>
+    <div class="sticky-bar__row">
+      <img class="sticky-bar__thumb" id="sticky-thumb" src="" alt="" width="64" height="66">
+      <div class="sticky-bar__info">
+        <p class="sticky-bar__title" id="sticky-label"></p>
+        <p class="sticky-bar__price"><span id="sticky-price"></span><s id="sticky-compare" hidden></s></p>
+      </div>
+      <div class="sticky-bar__opts" id="sticky-opts"></div>
+    </div>
+    <div class="sticky-bar__row sticky-bar__row--btn">
+      <button type="button" class="btn sticky-bar__btn" id="sticky-cta">Ajouter au panier</button>
+    </div>
   </div>
 
   <script src="./app.js"></script>

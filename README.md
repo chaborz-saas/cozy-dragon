@@ -11,8 +11,8 @@ Toutes les pages portent `<meta name="robots" content="noindex,nofollow">` et un
 
 | Fichier | Rôle |
 | --- | --- |
-| `index.html` | Accueil : bloc « produit vedette » (galerie 6 photos, taille, couleur, quantité, « Ajouter au panier », « Payer avec Stripe ») + « Vu sur TikTok » |
-| `produit.html` | Fiche Dragon Onesie™ : galerie 8 photos, widget « Bundle & économisez » (3 offres + chaussons), guide des tailles, quantité / sous-total, preuve d'achat, accordéons, diaporama, bande noire, TikTok, témoignages, FAQ, contact, barre d'achat fixe mobile |
+| `index.html` | Accueil : bloc « produit vedette » (galerie 6 photos, taille, couleur, quantité, « Ajouter au panier », « Payer avec Stripe ») |
+| `produit.html` | Fiche Dragon Onesie™ : colonne média collante (galerie 8 photos + points), widget « Bundle & économisez » (3 cartes, bande chaussons sur chaque carte, autocollant « RECOMMANDÉ », ligne « Cadeau exclusif »), guide des tailles, quantité / sous-total, CTA noir, preuve d'achat, icônes de paiement (`img/demo/pay/`), accordéons ; puis diaporama blanc (3 GIF), bande noire ondulée, témoignages (carrousel, carte centrale noire), TikTok, FAQ, contact. Les textes repris du site de référence (diaporama, témoignages, FAQ, contact) sont **en anglais, verbatim** ; la boîte d'achat reste en français |
 | `chaussons.html`, `porte-cles.html` | Fiches produits simples (`products.slippers`, `products.keychain`) |
 | `contact.html` | Formulaire de contact (→ `mailto:`) |
 | `politique-de-confidentialite.html`, `mentions-legales.html`, `cgv.html`, `retours.html` | Pages légales (marqueurs `[À COMPLÉTER]`) |
@@ -24,9 +24,10 @@ Toutes les pages portent `<meta name="robots" content="noindex,nofollow">` et un
 recherche avec suggestions (les 3 produits, filtrées à la frappe), sélecteur « EUR ▾ » pays/devise (table de conversion fixe
 dans `app.js` → `COUNTRIES`, choix mémorisé, **paiement Stripe toujours en EUR**), tiroir panier (lignes, quantité, suppression,
 protection d'expédition, barre « livraison offerte » dès `cart.freeShippingEur`), boîte de consentement cookies (3 interrupteurs,
-cosmétique, aucun traceur), modale « Guide des tailles » (accueil), popover « Plus d'options de paiement », bouton d'achat
-flottant (pastille en bas à droite sur desktop, barre pleine largeur sur mobile) dès que le CTA principal sort de l'écran,
-visionneuse plein écran, toast « Ajouté au panier ».
+cosmétique, aucun traceur), popover « Plus d'options de paiement », barre d'achat flottante (695×68 en bas à droite sur
+desktop, pleine largeur 95 px sur mobile : miniature, titre/prix, listes Taille/Couleur synchronisées avec la boîte d'achat,
+bouton) dès que le CTA principal sort de l'écran, visionneuse plein écran, toast « Ajouté au panier ».
+Pied de page (toutes pages) : 144 px, uniquement le bouton « Terms and Policies » qui déplie les liens (`footer.links`).
 
 Polices : Inter partout, « Work Sans » sur le contenu de la fiche produit (boîte d'achat, bundles, diaporama, témoignages, FAQ, contact).
 Les dimensions de référence (en-tête 122/100 px, logo 100 px, gouttières 40/16 px, boutons 52 px rayon 14, CTA produit 46 px

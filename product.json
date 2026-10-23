@@ -31,7 +31,7 @@
     "Blanc",
     "Noir"
   ],
-  "sizingNote": "*Il est recommandé de prendre deux tailles au-dessus*",
+  "sizingNote": "***Prendre deux tailles au-dessus** est recommandé*",
   "bundles": [
     {
       "id": "b1",
@@ -75,6 +75,7 @@
       "compareAtEur": 124.98,
       "badge": "Le plus populaire",
       "badgeStyle": "green",
+      "sticker": "RECOMMANDÉ",
       "gift": "Cadeau exclusif : sélectionnez l'offre pour débloquer les cadeaux",
       "giftTag": "GRATUIT !!",
       "default": false,
@@ -138,12 +139,22 @@
   "purchaseProof": {
     "enabled": true,
     "avatar": "img/demo/avatar-1.jpg",
-    "avatars": ["img/demo/avatar-1.jpg", "img/demo/avatar-2.jpg", "img/demo/avatar-3.jpg"],
+    "avatars": [
+      "img/demo/avatar-1.jpg",
+      "img/demo/avatar-2.jpg",
+      "img/demo/avatar-3.jpg"
+    ],
     "text": "Sarah et 438 personnes ont acheté"
   },
-
-  "paymentOptions": ["Stripe", "Apple Pay", "Google Pay", "PayPal"],
-  "search": { "title": "Suggestions" },
+  "paymentOptions": [
+    "Stripe",
+    "Apple Pay",
+    "Google Pay",
+    "PayPal"
+  ],
+  "search": {
+    "title": "Suggestions"
+  },
   "buyboxAccordion": {
     "sizeGuideTitle": "Guide des tailles du onesie",
     "faqTitle": "Questions fréquentes",
@@ -204,7 +215,7 @@
       }
     ]
   },
-  "testimonialsTitle": "Rejoignez plus de 10 000 clients heureux",
+  "testimonialsTitle": "Join over 10,000+ Happy Customers",
   "testimonialsPill": "10 000+ clients",
   "testimonials": [
     {
@@ -229,30 +240,37 @@
       "verified": true
     }
   ],
-  "faqTitle": "Questions fréquentes",
-  "faqSubtitle": "Trouvez rapidement des réponses aux questions les plus courantes sur notre produit.",
+  "faqTitle": "Frequently Asked Questions",
+  "faqSubtitle": "Find quick answers to the most common questions about our product.",
   "faq": [
     {
-      "q": "Convient-il pour dormir ?",
-      "a": "Oui. La polaire est respirante et la coupe ample : parfait pour dormir, traîner à la maison ou pour une soirée film. La capuche se rabat sans gêner et le tissu reste doux lavage après lavage."
+      "q": "Is this onesie suitable for sleep and lounging overnight?",
+      "a": "Absolutely! Made from soft, breathable polyester, this onesie provides all-night comfort. The relaxed fit lets you move freely, the hood folds back without getting in the way, and the fabric stays cozy and warm without overheating, so you can wear it from movie night straight to bed."
     },
     {
-      "q": "Est-ce que la taille convient aux adultes ?",
-      "a": "Oui, le Dragon Onesie™ est un modèle adulte unisexe du S au XL. La coupe est oversize mais le tissu ne s'étire pas : nous recommandons de prendre deux tailles au-dessus de votre taille habituelle (voir le guide des tailles)."
+      "q": "Will this fit adults of different sizes?",
+      "a": "Yes. The Dragon Onesie™ is a unisex adult fit available in S to XL. It has a roomy, oversized cut, but the fabric does not stretch, so we recommend going two sizes up from your usual size. Check the size guide above to find the best match for your height and build."
     },
     {
-      "q": "Est-il durable ?",
-      "a": "Oui. Polaire épaisse double face, coutures renforcées, fermeture à glissière métal. Il se lave en machine à 30 °C et ne bouloche pas."
+      "q": "How durable is this product?",
+      "a": "Very. It is made from thick double-sided plush fleece with reinforced seams and a sturdy metal zipper. It is machine washable at 30 °C, does not pill, and keeps its softness and color wash after wash."
     },
     {
-      "q": "Est-il adapté aux soirées et au cosplay ?",
-      "a": "Complètement. Soirées pyjama, Halloween, conventions, cosplay ou simple soirée canapé : la capuche aux yeux brodés et aux cornes en relief fait son effet partout."
+      "q": "Can I wear this onesie for parties or cosplay events?",
+      "a": "Of course! Pajama parties, Halloween, conventions, cosplay nights or just a lazy evening on the couch: the hood with embroidered eyes and 3D horns turns heads wherever you go, and the full-body design makes it a complete costume on its own."
     }
   ],
   "contact": {
-    "title": "Écrivez-nous à tout moment",
-    "text": "Une question sur la taille, une commande à suivre, une idée de cadeau ? Nous répondons en français, sous 24 h ouvrées.",
-    "submit": "Envoyer le message"
+    "title": "Reach Out Any Time",
+    "text": "",
+    "submit": "Send Message",
+    "placeholders": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email *",
+      "phone": "Phone number",
+      "comment": "Comment"
+    }
   },
   "cart": {
     "title": "Panier",
@@ -267,7 +285,7 @@
     "freeShippingEur": 100,
     "protection": {
       "enabled": true,
-      "icon": "img/demo/shield.png",
+      "icon": "img/demo/shipping-protection.webp",
       "title": "Protection d'expédition",
       "text": "Protégez votre colis contre la perte, le vol ou les dommages.",
       "priceEur": 2.95
@@ -282,7 +300,7 @@
     "save": "Enregistrer les préférences"
   },
   "footer": {
-    "heading": "Conditions et politiques",
+    "trigger": "Terms and Policies",
     "links": [
       {
         "label": "Politique de confidentialité",
@@ -363,5 +381,38 @@
   "supportEmail": "contact@example.com",
   "instagram": "",
   "tiktokUrl": "",
-  "stripe": {}
+  "stripe": {},
+  "bundleThumb": "img/demo/bundle-thumb.jpg",
+  "bundleGift": {
+    "lead": "Cadeau exclusif",
+    "text": "sélectionnez l'offre pour débloquer les cadeaux",
+    "icon": "img/demo/gift.png",
+    "unlockBundle": "b3"
+  },
+  "paymentIcons": [
+    {
+      "label": "American Express",
+      "src": "img/demo/pay/american_express.svg"
+    },
+    {
+      "label": "Apple Pay",
+      "src": "img/demo/pay/apple_pay.svg"
+    },
+    {
+      "label": "Mastercard",
+      "src": "img/demo/pay/mastercard.svg"
+    },
+    {
+      "label": "Discover",
+      "src": "img/demo/pay/discover.svg"
+    },
+    {
+      "label": "Google Pay",
+      "src": "img/demo/pay/google_pay.svg"
+    },
+    {
+      "label": "Shop Pay",
+      "src": "img/demo/pay/shop_pay.svg"
+    }
+  ]
 }

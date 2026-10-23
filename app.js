@@ -171,8 +171,7 @@ async function loadProduct() {
 function initChrome(p, cart) {
   fillCommon(p);
   renderAnnouncement(p.announcement || {});
-  renderFooterLinks(p.footer || {});
-  renderPayments();
+  setupFooter(p.footer || {});
   setupToast();
   setupModal();
   setupLightboxShell();
@@ -246,15 +245,26 @@ function renderAnnouncement(a) {
   track.innerHTML = group + group.replace('class="announce__group"', 'class="announce__group" aria-hidden="true"');
 }
 
-function renderFooterLinks(f) {
+/* Pied de page : bouton texte « Terms and Policies » qui déplie la liste des liens (repliée par défaut). */
+function setupFooter(f) {
   const nav = q('[data-footer-links]');
-  if (!nav || !Array.isArray(f.links) || !f.links.length) return;
-  nav.innerHTML = f.links.map((l) => {
-    const href = String(l.href || '#');
-    const isCookie = href === '#cookies';
-    return `<a href="${escapeHtml(isCookie ? '#cookies' : './' + href.replace(/^\.?\//, ''))}"${isCookie ? ' data-cookie-prefs' : ''}>${escapeHtml(l.label || '')}</a>`;
-  }).join('');
-  if (f.heading) qa('.footer__heading').forEach((h) => { h.textContent = f.heading; });
+  const trigger = q('[data-footer-trigger]');
+  if (nav && Array.isArray(f.links) && f.links.length) {
+    nav.innerHTML = f.links.map((l) => {
+      const href = String(l.href || '#');
+      const isCookie = href === '#cookies';
+      return `<a href="${escapeHtml(isCookie ? '#cookies' : './' + href.replace(/^\.?\//, ''))}"${isCookie ? ' data-cookie-prefs' : ''}>${escapeHtml(l.label || '')}</a>`;
+    }).join('');
+  }
+  if (!nav || !trigger) return;
+  if (f.trigger) trigger.textContent = f.trigger;
+  nav.hidden = true;
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.addEventListener('click', () => {
+    const open = nav.hidden;
+    nav.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+  });
 }
 
 /* Icônes de paiement génériques (rectangles gris, texte) — aucune œuvre de marque. */
@@ -273,11 +283,16 @@ const PAYMENT_ICONS = {
   PayPal: () => paymentCard('PayPal', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" font-weight="700" fill="#444">PayPal</text>'),
   Stripe: () => paymentCard('Stripe', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#444">stripe</text>'),
 };
-function renderPayments() {
-  const box = q('[data-payments]');
-  if (!box) return;
-  box.innerHTML = ['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'].map((k) => PAYMENT_ICONS[k]()).join('');
+/* Rangée d'icônes de paiement sous la preuve d'achat (fiche produit) : SVG de img/demo/pay/ (product.json → paymentIcons). */
+function renderPaymentIcons(p) {
+  const row = q('#pay-row');
+  if (!row) return;
+  const icons = (Array.isArray(p.paymentIcons) ? p.paymentIcons : []).filter((i) => i && i.src);
+  if (!icons.length) { row.hidden = true; return; }
+  row.innerHTML = icons.map((i) => `<img src="${escapeHtml(i.src)}" alt="${escapeHtml(i.label || '')}" width="38" height="24" loading="lazy">`).join('');
 }
+
+const CROWN_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>';
 
 /* Recherche : overlay avec champ + « Suggestions » (les 3 produits) filtrées à la frappe. */
 function setupSearch(p) {
@@ -806,12 +821,13 @@ function setupGallery(root, images, name) {
   const prev = root.querySelector('.gallery__arrow--prev');
   const next = root.querySelector('.gallery__arrow--next');
   const counter = root.querySelector('.gallery__counter');
+  const dots = root.querySelector('.gallery__dots');
   if (!track) return;
 
   if (prev) prev.innerHTML = icon('arrow-left');
   if (next) next.innerHTML = icon('arrow-right');
   const n = images.length;
-  if (!n) { if (prev) prev.hidden = true; if (next) next.hidden = true; if (counter) counter.hidden = true; return; }
+  if (!n) { if (prev) prev.hidden = true; if (next) next.hidden = true; if (counter) counter.hidden = true; if (dots) dots.hidden = true; return; }
 
   const openLightbox = setupLightbox(images, name);
   let index = 0;
@@ -843,9 +859,16 @@ function setupGallery(root, images, name) {
       btn.addEventListener('click', () => goTo(i));
       thumbs.append(btn);
     }
+    if (dots && n > 1) {
+      const d = el('button', 'gallery__dot');
+      d.type = 'button';
+      d.setAttribute('aria-label', `Afficher la photo ${i + 1}`);
+      d.addEventListener('click', () => goTo(i));
+      dots.append(d);
+    }
   });
   if (thumbs && n < 2) thumbs.hidden = true;
-  if (n < 2) { if (prev) prev.hidden = true; if (next) next.hidden = true; if (counter) counter.hidden = true; }
+  if (n < 2) { if (prev) prev.hidden = true; if (next) next.hidden = true; if (counter) counter.hidden = true; if (dots) dots.hidden = true; }
 
   function goTo(i, smooth = true) {
     index = ((i % n) + n) % n;
@@ -854,6 +877,7 @@ function setupGallery(root, images, name) {
   }
   function updateUI() {
     if (counter) counter.textContent = `${index + 1}/${n}`;
+    if (dots) dots.querySelectorAll('.gallery__dot').forEach((d, i) => d.setAttribute('aria-current', String(i === index)));
     if (!thumbs) return;
     thumbs.querySelectorAll('.gallery__thumb').forEach((b, i) => {
       const active = i === index;
@@ -1115,9 +1139,25 @@ function renderHome(p, cart) {
   setupStickyBar({
     getPrice: () => round2(cart.onesiePrice(state.qty)),
     label: p.name,
+    thumb: p.bundleThumb || p.thumbnail || images[0] || '',
+    options: [
+      { label: 'Taille', values: sizes, get: () => state.size, set: (v) => { state.size = v; selectPressed(q('#home-sizes'), v); } },
+      { label: 'Couleur', values: colors, get: () => state.color, set: (v) => { setColor(v); selectPressed(q('#home-colors'), v, 'aria-label'); } },
+    ],
     onClick: () => addToCartAndOpen(cart, lines()),
     canAdd: () => !sizes.length || Boolean(state.size),
     anchor: addBtn,
+  });
+}
+
+/* Met à jour l'état « pressé » d'un groupe de pastilles / nuances depuis l'extérieur (barre flottante) */
+function selectPressed(container, value, attr = '') {
+  if (!container) return;
+  container.querySelectorAll('[aria-pressed]').forEach((b) => {
+    const v = attr ? b.getAttribute(attr) : b.textContent.trim();
+    const on = v === value;
+    b.setAttribute('aria-pressed', String(on));
+    b.setAttribute('aria-checked', String(on));
   });
 }
 
@@ -1132,7 +1172,9 @@ function renderProduct(p, cart) {
   setPrice(q('#price'), p.priceEur);
   const cmp = q('#compare-at');
   if (cmp) { const c = Number(p.compareAtEur) || 0; if (c) setPrice(cmp, c); cmp.hidden = !c; }
-  setText('sizing-note', p.sizingNote);
+  // Phrase des tailles : **…** en gras, comme « *Sizing up by two sizes* is recommended* »
+  const note = q('#sizing-note');
+  if (note) note.innerHTML = escapeHtml(p.sizingNote || '').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
   setText('bundle-label', p.bundleLabel || 'Bundle & économisez');
   const chart = q('#size-chart-img');
   if (chart && p.sizeChart) chart.src = p.sizeChart;
@@ -1140,12 +1182,26 @@ function renderProduct(p, cart) {
   const shop = createOffers(p, cart);
   renderFeatures(p.features || []);
   renderProof(p.purchaseProof);
+  renderPaymentIcons(p);
   renderBuyboxAccordion(p);
   setupSlideshow(p.slideshow || {});
   renderTestimonials(p);
   renderFaq(p);
   renderContactTexts(p);
-  setupStickyBar({ getPrice: shop.subtotal, label: p.name, onClick: shop.addToCart, canAdd: () => true, anchor: q('#cta') });
+  setupStickyBar({
+    getPrice: shop.subtotal,
+    compare: Number(p.compareAtEur) || 0,
+    label: p.name,
+    thumb: p.bundleThumb || p.thumbnail || (p.images || [])[0] || '',
+    options: [
+      { label: 'Taille', values: p.sizes || [], get: () => shop.getOption('size'), set: (v) => shop.setOption('size', v) },
+      { label: 'Couleur', values: p.colors || [], get: () => shop.getOption('color'), set: (v) => shop.setOption('color', v) },
+    ],
+    onChange: shop.onChange,
+    onClick: shop.addToCart,
+    canAdd: () => true,
+    anchor: q('#cta'),
+  });
 }
 
 function renderRating(r) {
@@ -1167,9 +1223,12 @@ function starsHtml(value) {
   return html;
 }
 
-/* Widget « Bundle & économisez » : 3 offres, tailles/couleurs par article
-   (2 sélecteurs par ligne), chaussons en vente additionnelle, quantité,
-   sous-total, ajout au panier. */
+/* Widget « Bundle & économisez » : 3 offres ; par article une ligne
+   [miniature 64×66 | Taille | Couleur] (repliée sur les cartes non
+   sélectionnées) ; bande chaussons olive foncé sur CHAQUE carte (état
+   partagé) ; autocollant « RECOMMANDÉ » sur la carte 3 ; ligne « Cadeau
+   exclusif » sous les cartes (déverrouillée quand la carte 3 est choisie) ;
+   quantité, sous-total, ajout au panier. */
 function createOffers(p, cart) {
   const unit = Number(p.priceEur) || 0;
   const sizes = Array.isArray(p.sizes) ? p.sizes : [];
@@ -1178,6 +1237,10 @@ function createOffers(p, cart) {
   const upsell = p.upsell && p.upsell.enabled ? p.upsell : null;
   const upsellSizes = upsell && Array.isArray(upsell.sizes) ? upsell.sizes : [];
   const list = q('#offers');
+  const giftBox = q('#offers-gift');
+  const gift = p.bundleGift && (p.bundleGift.text || p.bundleGift.lead) ? p.bundleGift : null;
+  const thumb = p.bundleThumb || (p.images && p.images[0]) || '';
+  const listeners = [];
 
   const state = {
     bundleId: (bundles.find((b) => b.default) || bundles[0] || {}).id || '',
@@ -1197,6 +1260,13 @@ function createOffers(p, cart) {
     if (!bundles.length) list.hidden = true;
     bundles.forEach((b) => list.append(offerCard(b)));
   }
+  // Ligne « Cadeau exclusif : … » + boîte cadeau 64×64, sous les trois cartes
+  if (giftBox && gift) {
+    giftBox.classList.add('offer-gift');
+    giftBox.innerHTML = `
+      <p class="offer-gift__text">${gift.lead ? `<b>${escapeHtml(gift.lead)}</b>` : ''}${gift.lead && gift.text ? ' : ' : ''}${escapeHtml(gift.text || '')}</p>
+      <span class="offer-gift__box" aria-hidden="true">${gift.icon ? `<img src="${escapeHtml(gift.icon)}" alt="" width="36" height="36" loading="lazy">` : ''}</span>`;
+  } else if (giftBox) giftBox.hidden = true;
 
   function offerCard(b) {
     const qty = Number(b.qty);
@@ -1206,29 +1276,28 @@ function createOffers(p, cart) {
     const rows = state.items[b.id].map((item, i) => `
       ${qty > 1 ? `<p class="offer__num">Article ${i + 1}</p>` : ''}
       <div class="offer__row">
+        <img class="offer__thumb" src="${escapeHtml(thumb)}" alt="" width="64" height="66" loading="lazy">
         <span class="select"><span class="select__label">Taille</span><span class="select__wrap">${selectHtml(sizes, item.size, i, 'size', `Taille${qty > 1 ? ` – article ${i + 1}` : ''}`)}</span></span>
         <span class="select"><span class="select__label">Couleur</span><span class="select__wrap">${selectHtml(colors, item.color, i, 'color', `Couleur${qty > 1 ? ` – article ${i + 1}` : ''}`)}</span></span>
       </div>`).join('');
+    // Bande chaussons : hors du corps repliable, donc visible sur chaque carte
     const upsellHtml = upsell ? `
       <div class="upsell" data-upsell>
         <label class="upsell__main">
           <input class="upsell__check" type="checkbox" data-upsell-check>
-          ${upsell.image ? `<img class="upsell__thumb" src="${escapeHtml(upsell.image)}" alt="" width="44" height="44" loading="lazy">` : ''}
-          <span><span class="upsell__title">${escapeHtml(upsell.label || upsell.name || '')}</span>
-            ${upsell.sizeHint ? ` <span class="upsell__hint">${escapeHtml(upsell.sizeHint)}</span>` : ''}</span>
-          ${priceHtml(upsell.priceEur, 'upsell__price')}
+          ${upsell.image ? `<img class="upsell__thumb" src="${escapeHtml(upsell.image)}" alt="" width="64" height="66" loading="lazy">` : ''}
+          <span><span class="upsell__title">${escapeHtml(upsell.label || upsell.name || '')}</span>${upsell.sizeHint ? `<span class="upsell__hint">${escapeHtml(upsell.sizeHint)}</span>` : ''}</span>
         </label>
-        <div class="upsell__size"><div>
-          <span class="select"><span class="select__label">Taille des chaussons</span><span class="select__wrap">${selectHtml(upsellSizes, state.upsellSize, 0, 'upsellSize', 'Taille des chaussons')}</span></span>
-        </div></div>
+        <span class="select select--upsell"><span class="select__wrap">${selectHtml(upsellSizes, state.upsellSize, 0, 'upsellSize', 'Taille des chaussons')}</span></span>
+        ${priceHtml(upsell.priceEur, 'upsell__price')}
       </div>` : '';
     card.innerHTML = `
       <input class="offer__input" type="radio" name="offer" id="${inputId}" value="${escapeHtml(b.id)}">
-      ${b.badge ? `<span class="offer__badge">${escapeHtml(b.badge)}</span>` : ''}
+      ${b.sticker ? `<span class="offer__sticker" aria-hidden="true">${CROWN_SVG}<span>${escapeHtml(b.sticker)}</span></span>` : ''}
       <label class="offer__head" for="${inputId}">
         <span class="offer__radio" aria-hidden="true"></span>
         <span class="offer__text">
-          <span class="offer__title">${escapeHtml(b.title || `Acheter ${qty}`)}</span>
+          <span class="offer__title">${escapeHtml(b.title || `Acheter ${qty}`)}${b.badge ? `<span class="offer__badge">${escapeHtml(b.badge)}</span>` : ''}</span>
           ${b.subtitle ? `<span class="offer__sub">${escapeHtml(b.subtitle)}</span>` : ''}
           ${b.text ? `<span class="offer__desc">${escapeHtml(b.text)}</span>` : ''}
         </span>
@@ -1237,11 +1306,8 @@ function createOffers(p, cart) {
           ${bundleCompare(b) ? `<s class="offer__was">${priceHtml(bundleCompare(b))}</s>` : ''}
         </span>
       </label>
-      <div class="offer__body"><div><div class="offer__inner">
-        ${rows}
-        ${upsellHtml}
-        ${b.gift ? `<p class="offer__gift">${icon('check')}<span>${escapeHtml(b.gift)}</span>${b.giftTag ? `<strong>— ${escapeHtml(b.giftTag)}</strong>` : ''}</p>` : ''}
-      </div></div></div>`;
+      <div class="offer__body"><div><div class="offer__inner">${rows}</div></div></div>
+      ${upsellHtml}`;
     card.addEventListener('click', (e) => {
       if (e.target.closest('select, label, input, button')) return;
       const input = card.querySelector('.offer__input');
@@ -1270,9 +1336,16 @@ function createOffers(p, cart) {
         up.querySelector('[data-upsell-check]').checked = state.upsell;
         const sel = up.querySelector('select');
         if (sel) sel.value = state.upsellSize;
-        up.querySelector('.upsell__size').toggleAttribute('inert', !state.upsell);
       }
+      // Les sélecteurs de l'article 1 reflètent l'état (modifiable aussi depuis la barre flottante)
+      (state.items[card.dataset.bundle] || []).forEach((item, i) => {
+        ['size', 'color'].forEach((f) => {
+          const s = card.querySelector(`select[data-item="${i}"][data-field="${f}"]`);
+          if (s && s.value !== item[f]) s.value = item[f];
+        });
+      });
     });
+    if (giftBox && gift) giftBox.classList.toggle('is-unlocked', !gift.unlockBundle || state.bundleId === gift.unlockBundle);
   }
 
   if (list) {
@@ -1311,13 +1384,31 @@ function createOffers(p, cart) {
     return out;
   }
   function addToCart() { addToCartAndOpen(cart, lines()); }
-  function update() { setPrice(q('#subtotal'), subtotal()); document.dispatchEvent(new CustomEvent('subtotalchange')); }
+  function update() {
+    setPrice(q('#subtotal'), subtotal());
+    listeners.forEach((fn) => fn());
+    document.dispatchEvent(new CustomEvent('subtotalchange'));
+  }
+  /* Option (taille / couleur) de l'article 1 du pack courant — utilisée par la barre flottante */
+  function getOption(field) {
+    const b = current();
+    const it = b && state.items[b.id] ? state.items[b.id][0] : null;
+    return it ? it[field] || '' : '';
+  }
+  function setOption(field, value) {
+    const b = current();
+    const it = b && state.items[b.id] ? state.items[b.id][0] : null;
+    if (!it || it[field] === value) return;
+    it[field] = value;
+    syncUI();
+    update();
+  }
 
   const cta = q('#cta');
   if (cta) cta.addEventListener('click', addToCart);
   syncUI();
   update();
-  return { addToCart, subtotal, lines };
+  return { addToCart, subtotal, lines, getOption, setOption, onChange: (fn) => listeners.push(fn) };
 }
 
 function renderFeatures(features) {
@@ -1422,7 +1513,16 @@ function renderSimpleProduct(p, cart, key) {
     });
     makeAccordion(acc, [{ title: (p.buyboxAccordion || {}).shippingTitle || 'Préparation & livraison', content: ul }], { exclusive: true, level: 'h2' });
   }
-  setupStickyBar({ getPrice: () => round2((Number(prod.priceEur) || 0) * state.qty), label: prod.name, onClick: addToCart, canAdd: () => !sizes.length || Boolean(state.size), anchor: cta });
+  setupStickyBar({
+    getPrice: () => round2((Number(prod.priceEur) || 0) * state.qty),
+    compare: Number(prod.compareAtEur) || 0,
+    label: prod.name,
+    thumb: prod.image || (prod.images || [])[0] || '',
+    options: sizes.length ? [{ label: 'Taille', values: sizes, get: () => state.size, set: (v) => { state.size = v; selectPressed(q('#sp-sizes'), v); } }] : [],
+    onClick: addToCart,
+    canAdd: () => !sizes.length || Boolean(state.size),
+    anchor: cta,
+  });
 }
 
 /* ==================================================================
@@ -1528,22 +1628,26 @@ function renderTestimonials(p) {
   if (!section || !grid) return;
   const list = Array.isArray(p.testimonials) ? p.testimonials : [];
   if (!list.length) { section.hidden = true; return; }
-  setText('testimonials-title', p.testimonialsTitle || 'Rejoignez nos clients heureux');
+  setText('testimonials-title', p.testimonialsTitle || 'Join over 10,000+ Happy Customers');
   const pill = q('#testimonials-pill');
   if (pill) { pill.textContent = p.testimonialsPill || ''; pill.hidden = !p.testimonialsPill; }
-  list.forEach((t) => {
-    const card = el('article', 'review');
+  // Cartes : nom, titre en italique gras entre guillemets, 5 étoiles, texte ; la carte centrale est inversée (noire)
+  list.forEach((t, i) => {
+    const dark = t.dark === true || (t.dark === undefined && i === 1);
+    const card = el('article', 'review' + (dark ? ' review--dark' : ''));
     card.innerHTML = `
-      ${t.avatar ? `<img class="review__avatar" src="${escapeHtml(t.avatar)}" alt="" width="66" height="66" loading="lazy">` : ''}
-      <div class="review__head">
-        <span class="review__name">${escapeHtml(t.name || 'Client')}</span>
-        ${t.verified ? `<span class="review__verified">${icon('check')} Achat vérifié</span>` : ''}
-      </div>
+      <p class="review__name">${escapeHtml(t.name || 'Client')}</p>
+      ${t.title ? `<h3 class="review__title">${escapeHtml(t.title)}</h3>` : ''}
       <span class="stars stars--sm" role="img" aria-label="5 étoiles sur 5">${starsHtml(5)}</span>
-      ${t.title ? `<h3>${escapeHtml(t.title)}</h3>` : ''}
-      <p>${escapeHtml(t.text || '')}</p>`;
+      <p class="review__text">${escapeHtml(t.text || '')}</p>`;
     grid.append(card);
   });
+  // Carrousel : flèches rondes (défilement d'une carte), balayage natif (scroll-snap)
+  const prev = section.querySelector('.testimonials__arrow--prev');
+  const next = section.querySelector('.testimonials__arrow--next');
+  const step = () => { const c = grid.querySelector('.review'); return (c ? c.getBoundingClientRect().width : grid.clientWidth) + 24; };
+  if (prev) { prev.innerHTML = icon('arrow-left'); prev.addEventListener('click', () => grid.scrollBy({ left: -step(), behavior: REDUCED_MOTION ? 'auto' : 'smooth' })); }
+  if (next) { next.innerHTML = icon('arrow-right'); next.addEventListener('click', () => grid.scrollBy({ left: step(), behavior: REDUCED_MOTION ? 'auto' : 'smooth' })); }
 }
 
 function renderFaq(p) {
@@ -1559,10 +1663,20 @@ function renderFaq(p) {
 
 function renderContactTexts(p) {
   const c = p.contact || {};
-  setText('contact-title', c.title || 'Écrivez-nous à tout moment');
-  setText('contact-text', c.text || '');
+  setText('contact-title', c.title || 'Reach Out Any Time');
+  const txt = q('#contact-text');
+  if (txt) { txt.textContent = c.text || ''; txt.hidden = !c.text; }
   const btn = q('#contact-submit');
   if (btn && c.submit) btn.textContent = c.submit;
+  // Textes des champs affichés en placeholder (libellés conservés pour les lecteurs d'écran)
+  const ph = c.placeholders || {};
+  qa('[data-ph]').forEach((n) => {
+    const v = ph[n.dataset.ph];
+    if (!v) return;
+    n.placeholder = v;
+    const label = n.parentElement && n.parentElement.querySelector('.sr-only');
+    if (label) label.textContent = v.replace(/\s*\*\s*$/, '');
+  });
 }
 
 /* Formulaire de contact → mailto: pré-rempli (aucun backend) */
@@ -1607,19 +1721,42 @@ function setupLogin() {
   });
 }
 
-/* Bouton d'achat flottant (desktop, pastille en bas à droite) / barre fixe
-   (mobile) : visible dès que le CTA principal est sorti de l'écran. */
-function setupStickyBar({ getPrice, label, onClick, canAdd = () => true, anchor }) {
+/* Barre d'achat flottante : miniature + titre/prix + listes Taille/Couleur
+   (synchronisées avec la boîte d'achat) + bouton « Ajouter au panier ».
+   Visible dès que le CTA principal est sorti de l'écran. */
+function setupStickyBar({ getPrice, compare = 0, label, thumb = '', options = [], onChange = null, onClick, canAdd = () => true, anchor }) {
   const bar = q('#sticky-bar');
   const btn = q('#sticky-cta');
   if (!bar || !btn || !anchor) return;
   document.body.classList.add('has-sticky-bar');
   const price = q('#sticky-price');
+  const cmp = q('#sticky-compare');
   const lab = q('#sticky-label');
+  const img = q('#sticky-thumb');
+  const opts = q('#sticky-opts');
   if (lab) lab.textContent = label || '';
-  btn.innerHTML = `${icon('cart')}<span>Ajouter au panier</span><span class="sticky-bar__sep" aria-hidden="true">·</span><span class="sticky-bar__btnprice" data-eur="0"></span>`;
-  const btnPrice = btn.querySelector('.sticky-bar__btnprice');
-  const refresh = () => { const v = getPrice(); setPrice(price, v); setPrice(btnPrice, v); };
+  if (img) { if (thumb) img.src = thumb; else img.hidden = true; }
+  if (cmp) { if (compare) setPrice(cmp, compare); cmp.hidden = !compare; }
+  btn.innerHTML = `${icon('cart')}<span>Ajouter au panier</span>`;
+
+  const valid = options.filter((o) => o && Array.isArray(o.values) && o.values.length);
+  if (opts) {
+    opts.innerHTML = valid.map((o, i) => `
+      <span class="sticky-bar__select"><select data-sticky-opt="${i}" aria-label="${escapeHtml(o.label || '')}">${o.values.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('')}</select></span>`).join('');
+    opts.hidden = !valid.length;
+    const sync = () => valid.forEach((o, i) => { const s = opts.querySelector(`[data-sticky-opt="${i}"]`); if (s && o.get) s.value = o.get(); });
+    opts.addEventListener('change', (e) => {
+      const s = e.target.closest('[data-sticky-opt]');
+      if (!s) return;
+      const o = valid[Number(s.dataset.stickyOpt)];
+      if (o && o.set) o.set(s.value);
+    });
+    sync();
+    if (onChange) onChange(sync);
+    document.addEventListener('change', sync);
+  }
+
+  const refresh = () => setPrice(price, getPrice());
   refresh();
   document.addEventListener('subtotalchange', refresh);
   document.addEventListener('change', refresh);

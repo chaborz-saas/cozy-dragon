@@ -58,18 +58,18 @@
     <section class="contact section page" id="contact" aria-labelledby="contact-title">
       <div class="container contact__inner">
         <div class="contact__intro">
-          <h1 class="section__title" id="contact-title">Écrivez-nous à tout moment</h1>
-          <p id="contact-text"></p>
+          <h1 class="section__title" id="contact-title">Reach Out Any Time</h1>
+          <p id="contact-text" hidden></p>
         </div>
         <form class="form" id="contact-form" novalidate>
           <div class="form__row">
-            <label class="field"><span>Prénom</span><input type="text" name="prenom" autocomplete="given-name"></label>
-            <label class="field"><span>Nom</span><input type="text" name="nom" autocomplete="family-name"></label>
+            <label class="field"><span class="sr-only">First name</span><input type="text" name="prenom" autocomplete="given-name" placeholder="First name" data-ph="firstName"></label>
+            <label class="field"><span class="sr-only">Last name</span><input type="text" name="nom" autocomplete="family-name" placeholder="Last name" data-ph="lastName"></label>
           </div>
-          <label class="field"><span>E-mail <small>*</small></span><input type="email" name="email" autocomplete="email" required></label>
-          <label class="field"><span>Téléphone</span><input type="tel" name="telephone" autocomplete="tel"></label>
-          <label class="field"><span>Commentaire</span><textarea name="commentaire" rows="5"></textarea></label>
-          <button type="submit" class="btn btn--black" id="contact-submit">Envoyer le message</button>
+          <label class="field"><span class="sr-only">Email</span><input type="email" name="email" autocomplete="email" placeholder="Email *" data-ph="email" required></label>
+          <label class="field"><span class="sr-only">Phone number</span><input type="tel" name="telephone" autocomplete="tel" placeholder="Phone number" data-ph="phone"></label>
+          <label class="field"><span class="sr-only">Comment</span><textarea name="commentaire" rows="4" placeholder="Comment" data-ph="comment"></textarea></label>
+          <button type="submit" class="btn btn--black" id="contact-submit">Send Message</button>
           <p class="form__hint" id="form-hint" aria-live="polite">Votre application e-mail s'ouvrira avec le message pré-rempli.</p>
         </form>
       </div>
@@ -79,18 +79,14 @@
   <!-- Pied de page -->
   <footer class="footer">
     <div class="container">
-      <h2 class="footer__heading">Conditions et politiques</h2>
-      <nav class="footer__links" aria-label="Conditions et politiques" data-footer-links>
+      <button type="button" class="footer__trigger" id="footer-trigger" aria-expanded="false" aria-controls="footer-links" data-footer-trigger>Terms and Policies</button>
+      <nav class="footer__links" id="footer-links" aria-label="Terms and Policies" data-footer-links hidden>
         <a href="./politique-de-confidentialite.html">Politique de confidentialité</a>
         <a href="./mentions-legales.html">Mentions légales</a>
         <a href="./cgv.html">CGV</a>
         <a href="./retours.html">Retours</a>
         <a href="#cookies" data-cookie-prefs>Préférences cookies</a>
       </nav>
-      <div class="footer__bottom">
-        <div class="payments" data-payments aria-label="Moyens de paiement acceptés"></div>
-        <p class="footer__copy">© <span data-year>2026</span> <span data-brand>Cozy Dragon</span></p>
-      </div>
     </div>
   </footer>
 
