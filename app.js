@@ -1,21 +1,23 @@
 /* ==================================================================
    Cozy Dragon — app.js  (démo interne : réplique visuelle « Horizon »)
-   Charge ./product.json et construit les pages. Aucune dépendance.
+   Charge ./product.json et construit les pages. Aucune dépendance, aucun
+   backend : tout fonctionne en JS + localStorage.
 
    Organisation du fichier :
      1. Icônes SVG inline
-     2. Point d'entrée (selon <body data-page="…">)
-     3. Éléments communs : bandeau démo, marquee, en-tête, recherche,
-        menu mobile, pied de page, cookies, toast
-     4. Panier (état + tiroir + choix du Payment Link Stripe)
-     5. Galerie + visionneuse
-     6. Composants : pastilles, nuancier, compteur de quantité, accordéon
-     7. Accueil (produit vedette)
-     8. Page produit (bundles, vente additionnelle, sections)
-     9. Pages produit simples (chaussons, porte-clés)
-    10. Sections partagées : diaporama, TikTok, témoignages, FAQ, contact,
-        barre d'achat fixe
-    11. Utilitaires
+     2. Devise / pays (sélecteur « EUR ▾ », table de conversion fixe)
+     3. Point d'entrée (selon <body data-page="…">)
+     4. Éléments communs : bandeau démo, marquee, en-tête, recherche,
+        menu mobile, pied de page, cookies, toast, modale, popover
+     5. Panier (état + tiroir + barre « livraison offerte » + Stripe)
+     6. Galerie + visionneuse
+     7. Composants : pastilles, nuancier, compteur, accordéon
+     8. Accueil (produit vedette)
+     9. Page produit (bundles, vente additionnelle)
+    10. Pages produit simples (chaussons, porte-clés)
+    11. Sections partagées : diaporama, TikTok, témoignages, FAQ, contact,
+        bouton d'achat flottant / barre fixe
+    12. Utilitaires
 
    Logique d'achat : le panier (localStorage) contient des lignes
    { id, size, color, qty }. Au clic sur « Commander », on compte les
@@ -23,13 +25,15 @@
    bundles[N-1].paymentLink (ou .paymentLinkWithUpsell) avec un
    client_reference_id du type « b2_M-L_noir-noir_CH-M ». Sinon on prend
    le pack le plus proche et on l'indique. Lien vide = « Paiement bientôt
-   disponible ».
+   disponible ». Le paiement Stripe reste en EUR quelle que soit la devise
+   d'affichage.
    ================================================================== */
 
 'use strict';
 
 const CART_KEY = 'cozydragon:cart';
 const COOKIE_KEY = 'cozydragon:cookies';
+const COUNTRY_KEY = 'cozydragon:country';
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ==================================================================
@@ -57,7 +61,9 @@ const ICONS = {
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   play: '<path fill="currentColor" stroke="none" d="M7 4.5v15l13-7.5z"/>',
   mail: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/>',
-  zoom: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/>',
+  card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  ruler: '<path d="M3 17L17 3l4 4L7 21zM8 10l2 2M11 7l2 2M14 4l2 2M5 13l2 2"/>',
 };
 
 function icon(name, cls = '') {
@@ -67,13 +73,67 @@ function icon(name, cls = '') {
 }
 
 /* ==================================================================
-   2. Point d'entrée
+   2. Devise / pays : table de conversion fixe (démo), prix affichés
+      convertis, paiement Stripe toujours en EUR.
+   ================================================================== */
+
+const COUNTRIES = [
+  { id: 'FR', name: 'France', currency: 'EUR', symbol: '€', rate: 1, locale: 'fr-FR' },
+  { id: 'BE', name: 'Belgique', currency: 'EUR', symbol: '€', rate: 1, locale: 'fr-FR' },
+  { id: 'CH', name: 'Suisse', currency: 'CHF', symbol: 'CHF', rate: 0.95, locale: 'fr-CH' },
+  { id: 'LU', name: 'Luxembourg', currency: 'EUR', symbol: '€', rate: 1, locale: 'fr-FR' },
+  { id: 'CA', name: 'Canada', currency: 'CAD', symbol: '$', rate: 1.48, locale: 'fr-CA' },
+  { id: 'US', name: 'États-Unis', currency: 'USD', symbol: '$', rate: 1.08, locale: 'en-US' },
+  { id: 'GB', name: 'Royaume-Uni', currency: 'GBP', symbol: '£', rate: 0.85, locale: 'en-GB' },
+  { id: 'DE', name: 'Allemagne', currency: 'EUR', symbol: '€', rate: 1, locale: 'fr-FR' },
+];
+let COUNTRY = COUNTRIES[0];
+
+function initCurrency() {
+  const saved = readStorage(COUNTRY_KEY);
+  COUNTRY = COUNTRIES.find((c) => saved && c.id === saved.id) || COUNTRIES[0];
+}
+
+function setCountry(id) {
+  COUNTRY = COUNTRIES.find((c) => c.id === id) || COUNTRIES[0];
+  writeStorage(COUNTRY_KEY, { id: COUNTRY.id });
+  refreshPrices();
+  qa('[data-currency-label]').forEach((n) => { n.textContent = `${COUNTRY.currency} ${COUNTRY.symbol}`; });
+  qa('[data-country-select]').forEach((s) => { s.value = COUNTRY.id; });
+  qa('[data-country]').forEach((b) => { b.setAttribute('aria-selected', String(b.dataset.country === COUNTRY.id)); });
+  if (typeof CustomEvent === 'function' && document.dispatchEvent) document.dispatchEvent(new CustomEvent('currencychange'));
+}
+
+/* Prix : montant en EUR → devise choisie. Chaque nœud garde son montant EUR
+   dans data-eur pour être re-formaté au changement de devise. */
+function formatPrice(eur) {
+  const v = round2((Number(eur) || 0) * COUNTRY.rate);
+  return new Intl.NumberFormat(COUNTRY.locale, { style: 'currency', currency: COUNTRY.currency }).format(v);
+}
+function formatEur(eur) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(eur) || 0);
+}
+function priceHtml(eur, cls = '') {
+  return `<span${cls ? ` class="${cls}"` : ''} data-eur="${round2(eur)}">${escapeHtml(formatPrice(eur))}</span>`;
+}
+function setPrice(el, eur) {
+  if (!el) return;
+  el.dataset.eur = String(round2(eur));
+  el.textContent = formatPrice(eur);
+}
+function refreshPrices() {
+  qa('[data-eur]').forEach((n) => { n.textContent = formatPrice(Number(n.dataset.eur)); });
+}
+
+/* ==================================================================
+   3. Point d'entrée
    ================================================================== */
 
 (async function main() {
   const p = await loadProduct();
   if (!p) return;
 
+  initCurrency();
   const cart = createCart(p);
   initChrome(p, cart);
 
@@ -84,6 +144,7 @@ function icon(name, cls = '') {
 
   if (q('#tiktok-grid')) renderTiktok(p);
   if (q('#contact-form')) setupContact(p);
+  if (q('#login-form')) setupLogin();
 })();
 
 async function loadProduct() {
@@ -104,7 +165,7 @@ async function loadProduct() {
 }
 
 /* ==================================================================
-   3. Éléments communs à toutes les pages
+   4. Éléments communs à toutes les pages
    ================================================================== */
 
 function initChrome(p, cart) {
@@ -112,11 +173,13 @@ function initChrome(p, cart) {
   renderAnnouncement(p.announcement || {});
   renderFooterLinks(p.footer || {});
   renderPayments();
-  setupSearch();
+  setupToast();
+  setupModal();
+  setupLightboxShell();
+  setupSearch(p);
+  setupCountryMenu();
   setupMobileMenu(p);
   setupCookies(p.cookies || {});
-  setupToast();
-  setupLightboxShell();
   setupDrawer(p, cart);
 
   const cartBtn = q('#cart-btn');
@@ -128,7 +191,27 @@ function initChrome(p, cart) {
   const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   qa('.nav a, .mobile-menu__panel a').forEach((a) => {
     const target = (a.getAttribute('href') || '').replace(/^\.\//, '').toLowerCase();
-    if (target === file || (file === '' && target === 'index.html')) a.setAttribute('aria-current', 'page');
+    if (target === file) a.setAttribute('aria-current', 'page');
+  });
+
+  // Guide des tailles en modale (lien souligné sous les pastilles de l'accueil)
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-size-guide]');
+    if (!link) return;
+    e.preventDefault();
+    openModal({
+      title: 'Guide des tailles',
+      html: p.sizeChart ? `<img src="${escapeHtml(p.sizeChart)}" alt="Guide des tailles du onesie (mesures en centimètres)" width="1480" height="969">` : '<p>Guide des tailles indisponible.</p>',
+    });
+  });
+
+  // Défilement doux vers la boîte d'achat (bouton du diaporama, liens #buybox)
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href="#buybox"]');
+    const box = q('#buybox');
+    if (!a || !box) return;
+    e.preventDefault();
+    box.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
   });
 }
 
@@ -144,6 +227,7 @@ function fillCommon(p) {
     const text = (p.shipping || {})[n.dataset.shipping];
     if (text) n.textContent = text;
   });
+  qa('[data-currency-label]').forEach((n) => { n.textContent = `${COUNTRY.currency} ${COUNTRY.symbol}`; });
   if (p.demo && p.demo.strip) qa('[data-demo-strip]').forEach((n) => { n.textContent = p.demo.strip; });
 }
 
@@ -174,64 +258,145 @@ function renderFooterLinks(f) {
 }
 
 /* Icônes de paiement génériques (rectangles gris, texte) — aucune œuvre de marque. */
-function renderPayments() {
-  const box = q('[data-payments]');
-  if (!box) return;
-  const card = (label, extra = '') => `
-    <svg viewBox="0 0 38 24" role="img" aria-label="${escapeHtml(label)}">
+function paymentCard(label, extra = '') {
+  return `<svg viewBox="0 0 38 24" role="img" aria-label="${escapeHtml(label)}">
       <rect x="0.5" y="0.5" width="37" height="23" rx="4" fill="#fff" stroke="#d9d9d9"/>
       ${extra || `<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" font-weight="700" fill="#444">${escapeHtml(label)}</text>`}
     </svg>`;
-  box.innerHTML = [
-    card('VISA'),
-    card('Mastercard', '<circle cx="15" cy="12" r="6" fill="#bdbdbd"/><circle cx="23" cy="12" r="6" fill="#8a8a8a" fill-opacity="0.85"/>'),
-    card('AMEX'),
-    card('Apple Pay', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#444">Pay</text>'),
-    card('Google Pay', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#444">G Pay</text>'),
-  ].join('');
+}
+const PAYMENT_ICONS = {
+  Visa: () => paymentCard('VISA'),
+  Mastercard: () => paymentCard('Mastercard', '<circle cx="15" cy="12" r="6" fill="#bdbdbd"/><circle cx="23" cy="12" r="6" fill="#8a8a8a" fill-opacity="0.85"/>'),
+  Amex: () => paymentCard('AMEX'),
+  'Apple Pay': () => paymentCard('Apple Pay', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#444">Pay</text>'),
+  'Google Pay': () => paymentCard('Google Pay', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#444">G Pay</text>'),
+  PayPal: () => paymentCard('PayPal', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" font-weight="700" fill="#444">PayPal</text>'),
+  Stripe: () => paymentCard('Stripe', '<text x="19" y="15.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#444">stripe</text>'),
+};
+function renderPayments() {
+  const box = q('[data-payments]');
+  if (!box) return;
+  box.innerHTML = ['Visa', 'Mastercard', 'Amex', 'Apple Pay', 'Google Pay'].map((k) => PAYMENT_ICONS[k]()).join('');
 }
 
-/* Recherche : simple overlay avec un champ (démo, aucun index). */
-function setupSearch() {
+/* Recherche : overlay avec champ + « Suggestions » (les 3 produits) filtrées à la frappe. */
+function setupSearch(p) {
   const btn = q('#search-btn');
   if (!btn) return;
+  const items = catalog(p);
   document.body.insertAdjacentHTML('beforeend', `
     <div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Recherche">
       <form class="search-overlay__inner" id="search-form" role="search">
         <input class="search-overlay__input" id="search-input" type="search" placeholder="Rechercher" aria-label="Rechercher" autocomplete="off">
         <button type="button" class="icon-btn" id="search-close" aria-label="Fermer">${icon('close')}</button>
       </form>
-      <p class="search-overlay__hint">Démo : la recherche n'est pas branchée.</p>
+      <div class="search-overlay__results">
+        <p class="search-overlay__label">${escapeHtml((p.search && p.search.title) || 'Suggestions')}</p>
+        <ul class="search-list" id="search-list"></ul>
+      </div>
     </div>`);
   const overlay = q('#search-overlay');
   const input = q('#search-input');
-  const open = () => { overlay.classList.add('is-open'); lockScroll(true); setTimeout(() => input.focus(), 30); };
-  const close = () => { overlay.classList.remove('is-open'); lockScroll(false); btn.focus(); };
+  const list = q('#search-list');
+
+  function render(query) {
+    const needle = normalize(query);
+    const hits = items.filter((it) => !needle || normalize(it.name).includes(needle) || normalize(it.keywords || '').includes(needle));
+    list.innerHTML = hits.length
+      ? hits.map((it) => `
+        <li><a class="search-item" href="${escapeHtml(it.page)}">
+          <img src="${escapeHtml(it.image)}" alt="" width="56" height="56" loading="lazy">
+          <span class="search-item__name">${escapeHtml(it.name)}</span>
+          ${priceHtml(it.priceEur, 'search-item__price')}
+        </a></li>`).join('')
+      : '<li class="search-list__empty">Aucun résultat</li>';
+  }
+  const open = () => { render(''); overlay.classList.add('is-open'); lockScroll(true); setTimeout(() => input.focus(), 30); };
+  const close = () => { overlay.classList.remove('is-open'); lockScroll(false); input.value = ''; btn.focus(); };
   btn.addEventListener('click', open);
   q('#search-close').addEventListener('click', close);
-  q('#search-form').addEventListener('submit', (e) => { e.preventDefault(); toast('Recherche (démo) : « ' + input.value.trim() + ' »'); close(); });
+  input.addEventListener('input', () => render(input.value));
+  q('#search-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const first = list.querySelector('.search-item');
+    if (first) location.href = first.getAttribute('href'); else toast('Aucun résultat pour « ' + input.value.trim() + ' »');
+  });
   overlay.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 }
 
-/* Menu mobile : panneau latéral gauche. */
+/* Catalogue (3 produits) utilisé par la recherche et le menu */
+function catalog(p) {
+  const pr = p.products || {};
+  const out = [{ id: 'onesie', name: p.name || 'Produit', page: './produit.html', image: p.thumbnail || (p.images || [])[0] || '', priceEur: Number(p.priceEur) || 0, keywords: 'pyjama dragon onesie combinaison' }];
+  ['slippers', 'keychain'].forEach((k) => {
+    if (pr[k]) out.push({ id: k, name: pr[k].name || k, page: './' + (pr[k].page || `${k}.html`), image: pr[k].image || (pr[k].images || [])[0] || '', priceEur: Number(pr[k].priceEur) || 0, keywords: k === 'slippers' ? 'chaussons pantoufles' : 'porte-clés peluche cadeau' });
+  });
+  return out;
+}
+
+/* Sélecteur pays / devise (« EUR ▾ ») : liste « Pays/région » avec champ de recherche. */
+function setupCountryMenu() {
+  const btn = q('#currency-btn');
+  if (!btn) return;
+  const host = btn.parentElement;
+  host.insertAdjacentHTML('beforeend', `
+    <div class="country-menu" id="country-menu" hidden>
+      <p class="country-menu__title">Pays/région</p>
+      <input class="country-menu__search" id="country-search" type="search" placeholder="Rechercher" aria-label="Rechercher un pays" autocomplete="off">
+      <ul class="country-menu__list" id="country-list" role="listbox" aria-label="Pays/région"></ul>
+    </div>`);
+  const menu = q('#country-menu');
+  const search = q('#country-search');
+  const list = q('#country-list');
+
+  function render(query) {
+    const needle = normalize(query);
+    const hits = COUNTRIES.filter((c) => !needle || normalize(c.name).includes(needle) || normalize(c.currency).includes(needle));
+    list.innerHTML = hits.length
+      ? hits.map((c) => `<li><button type="button" role="option" data-country="${c.id}" aria-selected="${c.id === COUNTRY.id}"><span>${escapeHtml(c.name)}</span><span class="country-menu__cur">${escapeHtml(c.currency)} ${escapeHtml(c.symbol)}</span></button></li>`).join('')
+      : '<li class="country-menu__empty">Aucun pays</li>';
+  }
+  function open() { render(''); menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); setTimeout(() => search.focus(), 30); }
+  function close() { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); search.value = ''; }
+
+  btn.addEventListener('click', () => (menu.hidden ? open() : close()));
+  search.addEventListener('input', () => render(search.value));
+  list.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-country]');
+    if (!b) return;
+    setCountry(b.dataset.country);
+    close();
+    toast(`Pays : ${COUNTRY.name} · prix en ${COUNTRY.currency}`);
+  });
+  document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) close(); });
+}
+
+function countrySelectHtml() {
+  return `<label class="country-select"><span>Pays/région</span>
+    <span class="select__wrap"><select data-country-select aria-label="Pays/région">${COUNTRIES.map((c) => `<option value="${c.id}"${c.id === COUNTRY.id ? ' selected' : ''}>${escapeHtml(c.name)} · ${escapeHtml(c.currency)} ${escapeHtml(c.symbol)}</option>`).join('')}</select></span></label>`;
+}
+
+/* Menu mobile : panneau latéral gauche + sélecteur pays en bas. */
 function setupMobileMenu(p) {
   const btn = q('#menu-btn');
   if (!btn) return;
   const products = p.products || {};
   const links = [
     ['./index.html', 'Accueil'],
-    ['./produit.html', p.name || 'Produit'],
-    products.slippers ? ['./' + (products.slippers.page || 'chaussons.html'), products.slippers.name] : null,
-    products.keychain ? ['./' + (products.keychain.page || 'porte-cles.html'), products.keychain.name] : null,
+    ['./produit.html', 'Produit'],
+    products.slippers ? ['./' + (products.slippers.page || 'chaussons.html'), 'Chaussons'] : null,
+    products.keychain ? ['./' + (products.keychain.page || 'porte-cles.html'), 'Porte-clés'] : null,
     ['./contact.html', 'Contact'],
+    ['./connexion.html', 'Connexion'],
   ].filter(Boolean);
   document.body.insertAdjacentHTML('beforeend', `
     <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
       <div class="mobile-menu__overlay" data-close></div>
       <div class="mobile-menu__panel">
         <button type="button" class="icon-btn mobile-menu__close" aria-label="Fermer" data-close>${icon('close')}</button>
-        ${links.map(([href, label]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join('')}
-        <div class="mobile-menu__meta"><span>${icon('globe')}</span><span>EUR €</span><a href="#" style="border:0;padding:0;font-size:13px;margin-left:auto">${icon('user')}</a></div>
+        <nav class="mobile-menu__nav" aria-label="Menu">${links.map(([href, label]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join('')}</nav>
+        <div class="mobile-menu__meta">${countrySelectHtml()}</div>
       </div>
     </div>`);
   const menu = q('#mobile-menu');
@@ -240,18 +405,25 @@ function setupMobileMenu(p) {
   btn.addEventListener('click', open);
   menu.querySelectorAll('[data-close]').forEach((n) => n.addEventListener('click', close));
   menu.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  menu.querySelector('[data-country-select]').addEventListener('change', (e) => { setCountry(e.target.value); toast(`Pays : ${COUNTRY.name} · prix en ${COUNTRY.currency}`); });
 }
 
-/* Consentement cookies : purement cosmétique (aucun traceur), choix mémorisé. */
+/* Consentement cookies : purement cosmétique (aucun traceur), 3 interrupteurs, choix mémorisé. */
 function setupCookies(c) {
+  const toggle = (id, label, checked, locked) => `
+    <label class="toggle">
+      <input type="checkbox" id="${id}"${checked ? ' checked' : ''}${locked ? ' disabled' : ''}>
+      <span class="toggle__track" aria-hidden="true"></span>
+      <span class="toggle__label">${label}</span>
+    </label>`;
   document.body.insertAdjacentHTML('beforeend', `
     <div class="cookie" id="cookie" role="dialog" aria-labelledby="cookie-title">
       <p class="cookie__title" id="cookie-title">${escapeHtml(c.title || 'Consentement aux cookies')}</p>
       <p class="cookie__text">${escapeHtml(c.text || '')}</p>
       <div class="cookie__prefs" id="cookie-prefs" hidden>
-        <label><input type="checkbox" checked disabled> <span>Essentiels <small>(toujours actifs)</small></span></label>
-        <label><input type="checkbox" id="cookie-analytics"> <span>Mesure d'audience</span></label>
-        <label><input type="checkbox" id="cookie-marketing"> <span>Marketing</span></label>
+        ${toggle('cookie-essential', 'Essentiels <small>(toujours actifs)</small>', true, true)}
+        ${toggle('cookie-analytics', 'Mesure d\'audience', false, false)}
+        ${toggle('cookie-marketing', 'Marketing', false, false)}
       </div>
       <div class="cookie__actions">
         <button type="button" class="btn btn--sm btn--outline" id="cookie-manage">${escapeHtml(c.manage || 'Gérer les préférences')}</button>
@@ -264,11 +436,11 @@ function setupCookies(c) {
   const manage = q('#cookie-manage');
   const saved = readStorage(COOKIE_KEY);
 
-  function open() {
-    if (saved && typeof saved === 'object') {
-      q('#cookie-analytics').checked = Boolean(saved.analytics);
-      q('#cookie-marketing').checked = Boolean(saved.marketing);
-    }
+  function open(showPrefs) {
+    const cur = readStorage(COOKIE_KEY);
+    if (cur) { q('#cookie-analytics').checked = Boolean(cur.analytics); q('#cookie-marketing').checked = Boolean(cur.marketing); }
+    prefs.hidden = !showPrefs;
+    manage.textContent = showPrefs ? (c.save || 'Enregistrer les préférences') : (c.manage || 'Gérer les préférences');
     box.classList.add('is-open');
   }
   function close(choice) {
@@ -277,10 +449,9 @@ function setupCookies(c) {
     prefs.hidden = true;
     manage.textContent = c.manage || 'Gérer les préférences';
   }
-
   manage.addEventListener('click', () => {
     if (prefs.hidden) { prefs.hidden = false; manage.textContent = c.save || 'Enregistrer les préférences'; }
-    else close('custom');
+    else { close('custom'); toast('Préférences enregistrées'); }
   });
   q('#cookie-accept').addEventListener('click', () => { q('#cookie-analytics').checked = true; q('#cookie-marketing').checked = true; close('accept'); });
   q('#cookie-decline').addEventListener('click', () => { q('#cookie-analytics').checked = false; q('#cookie-marketing').checked = false; close('decline'); });
@@ -288,12 +459,9 @@ function setupCookies(c) {
     const link = e.target.closest('[data-cookie-prefs], a[href="#cookies"]');
     if (!link) return;
     e.preventDefault();
-    open();
-    prefs.hidden = false;
-    manage.textContent = c.save || 'Enregistrer les préférences';
+    open(true);
   });
-
-  if (!saved) setTimeout(open, 600);
+  if (!saved) setTimeout(() => open(false), 600);
 }
 
 function setupToast() {
@@ -309,10 +477,55 @@ function toast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('is-visible'), 2600);
 }
 
+/* Modale générique (guide des tailles) */
+function setupModal() {
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+      <div class="modal__overlay" data-modal-close></div>
+      <div class="modal__panel">
+        <div class="modal__head"><h2 class="modal__title" id="modal-title"></h2><button type="button" class="icon-btn" aria-label="Fermer" data-modal-close>${icon('close')}</button></div>
+        <div class="modal__body" id="modal-body"></div>
+      </div>
+    </div>`);
+  const m = q('#modal');
+  m.querySelectorAll('[data-modal-close]').forEach((n) => n.addEventListener('click', closeModal));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !m.hidden) closeModal(); });
+}
+function openModal({ title = '', html = '' }) {
+  const m = q('#modal');
+  if (!m) return;
+  q('#modal-title').textContent = title;
+  q('#modal-body').innerHTML = html;
+  m.hidden = false;
+  lockScroll(true);
+  setTimeout(() => { const c = m.querySelector('[data-modal-close].icon-btn'); if (c) c.focus(); }, 30);
+}
+function closeModal() {
+  const m = q('#modal');
+  if (!m || m.hidden) return;
+  m.hidden = true;
+  lockScroll(false);
+}
+
+/* Popover ancré sous un élément (ex. « Plus d'options de paiement ») */
+function attachPopover(anchor, html) {
+  if (!anchor) return;
+  const pop = el('div', 'popover');
+  pop.setAttribute('role', 'dialog');
+  pop.hidden = true;
+  pop.innerHTML = html;
+  anchor.insertAdjacentElement('afterend', pop);
+  anchor.setAttribute('aria-expanded', 'false');
+  const show = (on) => { pop.hidden = !on; anchor.setAttribute('aria-expanded', String(on)); };
+  anchor.addEventListener('click', (e) => { e.preventDefault(); show(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !pop.contains(e.target) && e.target !== anchor && !anchor.contains(e.target)) show(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) show(false); });
+}
+
 function lockScroll(lock) { document.body.classList.toggle('is-locked', Boolean(lock)); }
 
 /* ==================================================================
-   4. Panier : état (localStorage), tiroir, Payment Link Stripe
+   5. Panier : état (localStorage), tiroir, Payment Link Stripe
    ================================================================== */
 
 function createCart(p) {
@@ -323,6 +536,7 @@ function createCart(p) {
   const unit = Number(p.priceEur) || 0;
   const texts = p.cart || {};
   const protection = texts.protection && texts.protection.enabled ? texts.protection : null;
+  const freeShipping = Number(texts.freeShippingEur) || 0;
   const listeners = [];
 
   /* --- État --- */
@@ -383,13 +597,17 @@ function createCart(p) {
     });
     const gross = round2(onesies * unit);
     const net = onesiePrice(onesies);
+    const merch = round2(net + others);
     const prot = protection && withProtection ? Number(protection.priceEur) || 0 : 0;
     return {
       count, onesies,
       discountPct: discountPct(onesies),
       discount: round2(gross - net),
+      merch,
       protection: prot,
-      subtotal: round2(net + others + prot),
+      subtotal: round2(merch + prot),
+      freeShipping,
+      freeShippingLeft: freeShipping ? Math.max(0, round2(freeShipping - merch)) : 0,
     };
   }
 
@@ -455,6 +673,14 @@ function createCart(p) {
   };
 }
 
+/* Ajout + toast + ouverture du tiroir (même comportement partout) */
+function addToCartAndOpen(cart, lines) {
+  if (!lines || !lines.length) return;
+  cart.add(lines);
+  toast('Ajouté au panier');
+  cart.open();
+}
+
 function updateCartCount(cart) {
   const n = cart.count();
   qa('[data-cart-count]').forEach((b) => { b.textContent = String(n); b.hidden = n === 0; });
@@ -477,7 +703,6 @@ function setupDrawer(p, cart) {
   const overlay = q('#drawer-overlay');
   const body = q('#drawer-body');
   const foot = q('#drawer-foot');
-  const cur = p.currency;
 
   function open() { render(); drawer.classList.add('is-open'); overlay.classList.add('is-open'); drawer.setAttribute('aria-hidden', 'false'); lockScroll(true); setTimeout(() => q('#drawer-close').focus(), 50); }
   function close() { drawer.classList.remove('is-open'); overlay.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); lockScroll(false); }
@@ -498,6 +723,20 @@ function setupDrawer(p, cart) {
       return;
     }
 
+    const tot = cart.totals();
+
+    // Barre « livraison offerte »
+    if (tot.freeShipping) {
+      const pct = Math.min(100, Math.round((tot.merch / tot.freeShipping) * 100));
+      const bar = el('div', 'shipbar');
+      bar.innerHTML = `
+        <p class="shipbar__text">${tot.freeShippingLeft > 0
+          ? `Plus que ${priceHtml(tot.freeShippingLeft)} pour la livraison offerte`
+          : `${icon('check')} Livraison offerte !`}</p>
+        <div class="shipbar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>`;
+      body.append(bar);
+    }
+
     items.forEach((line, i) => body.append(lineEl(line, i)));
 
     if (cart.protection) {
@@ -507,23 +746,22 @@ function setupDrawer(p, cart) {
       row.innerHTML = `
         ${pr.icon ? `<img class="cart-protect__icon" src="${escapeHtml(pr.icon)}" alt="" width="36" height="36" loading="lazy">` : '<span></span>'}
         <div><p class="cart-protect__title">${escapeHtml(pr.title || '')}</p><p class="cart-protect__text">${escapeHtml(pr.text || '')}</p></div>
-        <div class="cart-protect__right"><span>${formatPrice(pr.priceEur, cur)}</span>
+        <div class="cart-protect__right">${priceHtml(pr.priceEur)}
           <button type="button" class="switch" role="switch" aria-checked="${on}" aria-label="${escapeHtml(pr.title || 'Protection')}"></button></div>`;
       row.querySelector('.switch').addEventListener('click', (e) => cart.setProtection(e.currentTarget.getAttribute('aria-checked') !== 'true'));
       body.append(row);
     }
 
-    const tot = cart.totals();
     const pl = cart.plan();
     foot.innerHTML = `
-      ${tot.discount > 0 ? `<div class="drawer__line"><span>${escapeHtml(t.discountLabel || 'Remise pack')} (-${tot.discountPct} %)</span><span>-${formatPrice(tot.discount, cur)}</span></div>` : ''}
-      ${tot.protection > 0 ? `<div class="drawer__line"><span>${escapeHtml(cart.protection.title || '')}</span><span>${formatPrice(tot.protection, cur)}</span></div>` : ''}
-      <div class="drawer__subtotal"><span>${escapeHtml(t.subtotal || 'Sous-total')}</span><span>${formatPrice(tot.subtotal, cur)}</span></div>
+      ${tot.discount > 0 ? `<div class="drawer__line"><span>${escapeHtml(t.discountLabel || 'Remise pack')} (-${tot.discountPct} %)</span><span>-${priceHtml(tot.discount)}</span></div>` : ''}
+      ${tot.protection > 0 ? `<div class="drawer__line"><span>${escapeHtml(cart.protection.title || '')}</span>${priceHtml(tot.protection)}</div>` : ''}
+      <div class="drawer__subtotal"><span>${escapeHtml(t.subtotal || 'Sous-total')}</span>${priceHtml(tot.subtotal)}</div>
       <p class="drawer__note">${escapeHtml(t.note || '')}</p>
+      ${COUNTRY.currency !== 'EUR' ? `<p class="drawer__note">Paiement en EUR à l'étape Stripe : ${escapeHtml(formatEur(tot.subtotal))}.</p>` : ''}
       ${!pl.exact ? `<p class="drawer__warn">${escapeHtml(t.closestNote || '')}${pl.bundle ? ` (${escapeHtml(pl.bundle.title || pl.bundle.id)}${pl.withUpsell ? ' + chaussons' : ''})` : ''}</p>` : ''}
       <button type="button" class="btn btn--black btn--full" id="drawer-checkout"${pl.link ? '' : ' disabled'}>${escapeHtml(pl.link ? (t.checkout || 'Commander') : (t.soon || 'Paiement bientôt disponible'))}</button>`;
-    const btn = q('#drawer-checkout');
-    btn.addEventListener('click', () => { const url = cart.checkoutUrl(); if (url) location.href = url; });
+    q('#drawer-checkout').addEventListener('click', () => { const url = cart.checkoutUrl(); if (url) location.href = url; });
   }
 
   function lineEl(line, index) {
@@ -536,11 +774,11 @@ function setupDrawer(p, cart) {
       <div>
         <p class="cart-line__title">${escapeHtml(cart.titleOf(line.id))}</p>
         ${cart.variantText(line) ? `<p class="cart-line__variant">${escapeHtml(cart.variantText(line))}</p>` : ''}
-        <p class="cart-line__price">${formatPrice(unitP, cur)}${cmp ? `<s>${formatPrice(cmp, cur)}</s>` : ''}</p>
+        <p class="cart-line__price">${priceHtml(unitP)}${cmp ? `<s>${priceHtml(cmp)}</s>` : ''}</p>
         <div class="cart-line__bottom"></div>
       </div>
       <div class="cart-line__right">
-        <span>${formatPrice(unitP * line.qty, cur)}</span>
+        ${priceHtml(unitP * line.qty)}
         <button type="button" class="icon-btn cart-line__remove" aria-label="Supprimer">${icon('close')}</button>
       </div>`;
     node.querySelector('.cart-line__bottom').append(makeQty({ value: line.qty, min: 0, max: 99, small: true, onChange: (v) => cart.setQty(index, v) }));
@@ -551,12 +789,14 @@ function setupDrawer(p, cart) {
   q('#drawer-close').addEventListener('click', close);
   overlay.addEventListener('click', close);
   drawer.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-  cart.onChange(() => { if (drawer.classList.contains('is-open')) render(); });
+  const rerender = () => { if (drawer.classList.contains('is-open')) render(); };
+  cart.onChange(rerender);
+  document.addEventListener('currencychange', rerender);
   cart._setOpen(open);
 }
 
 /* ==================================================================
-   5. Galerie (scroll-snap + flèches + miniatures) et visionneuse
+   6. Galerie (scroll-snap + flèches + miniatures + compteur) et visionneuse
    ================================================================== */
 
 function setupGallery(root, images, name) {
@@ -565,12 +805,13 @@ function setupGallery(root, images, name) {
   const thumbs = root.querySelector('.gallery__thumbs');
   const prev = root.querySelector('.gallery__arrow--prev');
   const next = root.querySelector('.gallery__arrow--next');
+  const counter = root.querySelector('.gallery__counter');
   if (!track) return;
 
   if (prev) prev.innerHTML = icon('arrow-left');
   if (next) next.innerHTML = icon('arrow-right');
   const n = images.length;
-  if (!n) { if (prev) prev.hidden = true; if (next) next.hidden = true; return; }
+  if (!n) { if (prev) prev.hidden = true; if (next) next.hidden = true; if (counter) counter.hidden = true; return; }
 
   const openLightbox = setupLightbox(images, name);
   let index = 0;
@@ -597,14 +838,14 @@ function setupGallery(root, images, name) {
       btn.setAttribute('aria-label', `Afficher la photo ${i + 1}`);
       btn.setAttribute('aria-selected', 'false');
       const timg = el('img');
-      timg.src = src; timg.alt = ''; timg.width = 72; timg.height = 72; timg.loading = 'lazy';
+      timg.src = src; timg.alt = ''; timg.width = 100; timg.height = 100; timg.loading = 'lazy';
       btn.append(timg);
       btn.addEventListener('click', () => goTo(i));
       thumbs.append(btn);
     }
   });
-  if (thumbs) { thumbs.classList.toggle('gallery__thumbs--8', n > 6); if (n < 2) thumbs.hidden = true; }
-  if (n < 2) { if (prev) prev.hidden = true; if (next) next.hidden = true; }
+  if (thumbs && n < 2) thumbs.hidden = true;
+  if (n < 2) { if (prev) prev.hidden = true; if (next) next.hidden = true; if (counter) counter.hidden = true; }
 
   function goTo(i, smooth = true) {
     index = ((i % n) + n) % n;
@@ -612,6 +853,7 @@ function setupGallery(root, images, name) {
     updateUI();
   }
   function updateUI() {
+    if (counter) counter.textContent = `${index + 1}/${n}`;
     if (!thumbs) return;
     thumbs.querySelectorAll('.gallery__thumb').forEach((b, i) => {
       const active = i === index;
@@ -670,7 +912,7 @@ function setupLightbox(images, name) {
     i = ((k % n) + n) % n;
     img.src = images[i];
     img.alt = `${name} – photo ${i + 1} sur ${n}`;
-    counter.textContent = `${i + 1} / ${n}`;
+    counter.textContent = `${i + 1}/${n}`;
     prev.hidden = next.hidden = n < 2;
   }
   function open(k) {
@@ -686,7 +928,6 @@ function setupLightbox(images, name) {
     q('#lightbox-close').addEventListener('click', shut);
     dlg.addEventListener('click', (e) => { if (e.target === dlg) shut(); });
   }
-  // (Ré)attache la navigation à ce jeu d'images
   prev.onclick = () => show(i - 1);
   next.onclick = () => show(i + 1);
   dlg.onkeydown = (e) => { if (e.key === 'ArrowLeft') show(i - 1); if (e.key === 'ArrowRight') show(i + 1); };
@@ -702,13 +943,14 @@ function setupLightbox(images, name) {
 }
 
 /* ==================================================================
-   6. Composants : pastilles, nuancier, quantité, accordéon
+   7. Composants : pastilles, nuancier, quantité, accordéon
    ================================================================== */
 
-/* Pastilles de taille (boutons arrondis, sélection = fond noir) */
+/* Pastilles de taille (rayon 14 px, sélection = fond noir) */
 function makePills(container, options, selected, onSelect) {
   if (!container) return;
   container.innerHTML = '';
+  container.style.setProperty('--pill-cols', String(Math.max(1, options.length)));
   options.forEach((opt) => {
     const b = el('button', 'pill-btn');
     b.type = 'button';
@@ -777,7 +1019,7 @@ function makeQty({ value = 1, min = 1, max = 99, small = false, onChange = () =>
   return box;
 }
 
-/* Accordéon accessible (aria-expanded + panneau animé via grid-template-rows) */
+/* Accordéon accessible : icône + (fermé) / − (ouvert), panneau animé via grid-template-rows */
 function makeAccordion(container, items, { exclusive = false, numbered = false, level = 'h3' } = {}) {
   const entries = [];
   items.forEach((it, idx) => {
@@ -792,7 +1034,8 @@ function makeAccordion(container, items, { exclusive = false, numbered = false, 
     btn.setAttribute('aria-controls', panelId);
     btn.innerHTML =
       (numbered ? `<span class="acc__num">${idx + 1}</span>` : '') +
-      `<span class="acc__q">${escapeHtml(it.title)}</span><span class="acc__chev">${icon('chevron')}</span>`;
+      `<span class="acc__q">${escapeHtml(it.title)}</span>` +
+      `<span class="acc__chev"><span class="acc__plus">${icon('plus')}</span><span class="acc__minus">${icon('minus')}</span></span>`;
     h.append(btn);
     const panel = el('div', 'acc__panel');
     panel.id = panelId;
@@ -822,7 +1065,7 @@ function makeAccordion(container, items, { exclusive = false, numbered = false, 
 }
 
 /* ==================================================================
-   7. Accueil : produit vedette
+   8. Accueil : produit vedette
    ================================================================== */
 
 function renderHome(p, cart) {
@@ -833,50 +1076,62 @@ function renderHome(p, cart) {
   const state = { size: sizes[0] || '', color: colors[0] || '', qty: 1 };
 
   setupGallery(q('#home-gallery'), images, p.name || '');
-  setText('home-vendor', home.vendor || p.brand);
   setText('home-title', p.name);
-  setText('home-price', formatPrice(p.priceEur, p.currency));
+  setPrice(q('#home-price'), p.priceEur);
 
   makePills(q('#home-sizes'), sizes, state.size, (v) => { state.size = v; });
   const colorName = q('#home-color-name');
-  const setColor = (v) => { state.color = v; if (colorName) colorName.textContent = v ? `: ${v}` : ''; };
+  const setColor = (v) => { state.color = v; if (colorName) colorName.textContent = v || ''; };
   makeSwatches(q('#home-colors'), colors, state.color, setColor);
   setColor(state.color);
   const qtyBox = q('#home-qty');
   if (qtyBox) qtyBox.append(makeQty({ value: 1, onChange: (v) => { state.qty = v; } }));
 
+  const lines = () => [{ id: 'onesie', size: state.size, color: state.color, qty: state.qty }];
   const addBtn = q('#home-add');
   const stripeBtn = q('#home-stripe');
   if (addBtn) {
     addBtn.innerHTML = `${icon('cart')}<span>${escapeHtml(home.addToCart || 'Ajouter au panier')}</span>`;
-    addBtn.addEventListener('click', () => {
-      cart.add([{ id: 'onesie', size: state.size, color: state.color, qty: state.qty }]);
-      cart.open();
-    });
+    addBtn.addEventListener('click', () => addToCartAndOpen(cart, lines()));
   }
   if (stripeBtn) {
     stripeBtn.textContent = home.payWithStripe || 'Payer avec Stripe';
     stripeBtn.addEventListener('click', () => {
-      const url = cart.checkoutUrl([{ id: 'onesie', size: state.size, color: state.color, qty: state.qty }]);
+      const url = cart.checkoutUrl(lines());
       if (url) location.href = url; else toast((p.cart || {}).soon || 'Paiement bientôt disponible');
     });
   }
+
+  // « Plus d'options de paiement » : popover (démo)
   const more = q('#home-more');
-  if (more && home.moreOptions) more.textContent = home.moreOptions;
+  if (more) {
+    more.textContent = home.moreOptions || 'Plus d\'options de paiement';
+    const options = Array.isArray(p.paymentOptions) && p.paymentOptions.length ? p.paymentOptions : ['Stripe', 'Apple Pay', 'Google Pay', 'PayPal'];
+    attachPopover(more, `
+      <p class="popover__title">Moyens de paiement</p>
+      <ul class="popover__list">${options.map((o) => `<li>${PAYMENT_ICONS[o] ? PAYMENT_ICONS[o]() : ''}<span>${escapeHtml(o)}</span><small>démo</small></li>`).join('')}</ul>`);
+  }
+
+  setupStickyBar({
+    getPrice: () => round2(cart.onesiePrice(state.qty)),
+    label: p.name,
+    onClick: () => addToCartAndOpen(cart, lines()),
+    canAdd: () => !sizes.length || Boolean(state.size),
+    anchor: addBtn,
+  });
 }
 
 /* ==================================================================
-   8. Page produit
+   9. Page produit
    ================================================================== */
 
 function renderProduct(p, cart) {
-  const cur = p.currency;
   setupGallery(q('#product-gallery'), p.images || [], p.name || '');
   renderRating(p.rating);
   setText('product-name', p.name);
-  setText('price', formatPrice(p.priceEur, cur));
+  setPrice(q('#price'), p.priceEur);
   const cmp = q('#compare-at');
-  if (cmp) { const c = Number(p.compareAtEur) || 0; cmp.textContent = c ? formatPrice(c, cur) : ''; cmp.hidden = !c; }
+  if (cmp) { const c = Number(p.compareAtEur) || 0; if (c) setPrice(cmp, c); cmp.hidden = !c; }
   setText('sizing-note', p.sizingNote);
   setText('bundle-label', p.bundleLabel || 'Bundle & économisez');
   const chart = q('#size-chart-img');
@@ -890,7 +1145,7 @@ function renderProduct(p, cart) {
   renderTestimonials(p);
   renderFaq(p);
   renderContactTexts(p);
-  setupStickyBar({ getPrice: shop.subtotal, label: p.name, onClick: shop.addToCart, anchor: q('#cta') });
+  setupStickyBar({ getPrice: shop.subtotal, label: p.name, onClick: shop.addToCart, canAdd: () => true, anchor: q('#cta') });
 }
 
 function renderRating(r) {
@@ -912,10 +1167,10 @@ function starsHtml(value) {
   return html;
 }
 
-/* Widget « Bundle & économisez » : 3 offres, tailles/couleurs par article,
-   chaussons en vente additionnelle, quantité, sous-total, ajout au panier. */
+/* Widget « Bundle & économisez » : 3 offres, tailles/couleurs par article
+   (2 sélecteurs par ligne), chaussons en vente additionnelle, quantité,
+   sous-total, ajout au panier. */
 function createOffers(p, cart) {
-  const cur = p.currency;
   const unit = Number(p.priceEur) || 0;
   const sizes = Array.isArray(p.sizes) ? p.sizes : [];
   const colors = Array.isArray(p.colors) && p.colors.length ? p.colors : [''];
@@ -949,8 +1204,8 @@ function createOffers(p, cart) {
     card.dataset.bundle = b.id;
     const inputId = `offer-${b.id}`;
     const rows = state.items[b.id].map((item, i) => `
-      <div class="offer__row${qty > 1 ? '' : ' offer__row--single'}">
-        ${qty > 1 ? `<span class="offer__num">#${i + 1}</span>` : ''}
+      ${qty > 1 ? `<p class="offer__num">Article ${i + 1}</p>` : ''}
+      <div class="offer__row">
         <span class="select"><span class="select__label">Taille</span><span class="select__wrap">${selectHtml(sizes, item.size, i, 'size', `Taille${qty > 1 ? ` – article ${i + 1}` : ''}`)}</span></span>
         <span class="select"><span class="select__label">Couleur</span><span class="select__wrap">${selectHtml(colors, item.color, i, 'color', `Couleur${qty > 1 ? ` – article ${i + 1}` : ''}`)}</span></span>
       </div>`).join('');
@@ -961,7 +1216,7 @@ function createOffers(p, cart) {
           ${upsell.image ? `<img class="upsell__thumb" src="${escapeHtml(upsell.image)}" alt="" width="44" height="44" loading="lazy">` : ''}
           <span><span class="upsell__title">${escapeHtml(upsell.label || upsell.name || '')}</span>
             ${upsell.sizeHint ? ` <span class="upsell__hint">${escapeHtml(upsell.sizeHint)}</span>` : ''}</span>
-          <span class="upsell__price">${formatPrice(upsell.priceEur, cur)}</span>
+          ${priceHtml(upsell.priceEur, 'upsell__price')}
         </label>
         <div class="upsell__size"><div>
           <span class="select"><span class="select__label">Taille des chaussons</span><span class="select__wrap">${selectHtml(upsellSizes, state.upsellSize, 0, 'upsellSize', 'Taille des chaussons')}</span></span>
@@ -969,7 +1224,7 @@ function createOffers(p, cart) {
       </div>` : '';
     card.innerHTML = `
       <input class="offer__input" type="radio" name="offer" id="${inputId}" value="${escapeHtml(b.id)}">
-      ${b.badge ? `<span class="offer__badge${b.badgeStyle === 'green' ? ' offer__badge--green' : ''}">${escapeHtml(b.badge)}</span>` : ''}
+      ${b.badge ? `<span class="offer__badge">${escapeHtml(b.badge)}</span>` : ''}
       <label class="offer__head" for="${inputId}">
         <span class="offer__radio" aria-hidden="true"></span>
         <span class="offer__text">
@@ -978,8 +1233,8 @@ function createOffers(p, cart) {
           ${b.text ? `<span class="offer__desc">${escapeHtml(b.text)}</span>` : ''}
         </span>
         <span class="offer__price">
-          <span class="offer__now">${formatPrice(bundlePrice(b), cur)}</span>
-          ${bundleCompare(b) ? `<s class="offer__was">${formatPrice(bundleCompare(b), cur)}</s>` : ''}
+          ${priceHtml(bundlePrice(b), 'offer__now')}
+          ${bundleCompare(b) ? `<s class="offer__was">${priceHtml(bundleCompare(b))}</s>` : ''}
         </span>
       </label>
       <div class="offer__body"><div><div class="offer__inner">
@@ -1015,8 +1270,7 @@ function createOffers(p, cart) {
         up.querySelector('[data-upsell-check]').checked = state.upsell;
         const sel = up.querySelector('select');
         if (sel) sel.value = state.upsellSize;
-        const sizeBox = up.querySelector('.upsell__size');
-        sizeBox.toggleAttribute('inert', !state.upsell);
+        up.querySelector('.upsell__size').toggleAttribute('inert', !state.upsell);
       }
     });
   }
@@ -1056,13 +1310,8 @@ function createOffers(p, cart) {
     if (upsell && state.upsell) out.push({ id: upsell.product || 'slippers', size: state.upsellSize, color: '', qty: state.qty });
     return out;
   }
-  function addToCart() {
-    const ls = lines();
-    if (!ls.length) return;
-    cart.add(ls);
-    cart.open();
-  }
-  function update() { setText('subtotal', formatPrice(subtotal(), cur)); }
+  function addToCart() { addToCartAndOpen(cart, lines()); }
+  function update() { setPrice(q('#subtotal'), subtotal()); document.dispatchEvent(new CustomEvent('subtotalchange')); }
 
   const cta = q('#cta');
   if (cta) cta.addEventListener('click', addToCart);
@@ -1082,11 +1331,16 @@ function renderFeatures(features) {
   });
 }
 
+/* « Sarah et 438 personnes ont acheté » : pile de 3 avatars + point « live » */
 function renderProof(proof) {
   const node = q('#proof');
   if (!node || !proof || !proof.enabled || !proof.text) return;
+  const avatars = (Array.isArray(proof.avatars) && proof.avatars.length ? proof.avatars : [proof.avatar]).filter(Boolean).slice(0, 3);
   const [first, ...rest] = String(proof.text).split(' ');
-  node.innerHTML = `${proof.avatar ? `<img class="proof__avatar" src="${escapeHtml(proof.avatar)}" alt="" width="28" height="28" loading="lazy">` : ''}<span><b>${escapeHtml(first)}</b> ${escapeHtml(rest.join(' '))}</span>`;
+  node.innerHTML = `
+    ${avatars.length ? `<span class="proof__stack">${avatars.map((a) => `<img src="${escapeHtml(a)}" alt="" width="28" height="28" loading="lazy">`).join('')}</span>` : ''}
+    <span class="proof__dot" aria-hidden="true"></span>
+    <span><b>${escapeHtml(first)}</b> ${escapeHtml(rest.join(' '))}</span>`;
   node.hidden = false;
 }
 
@@ -1117,25 +1371,24 @@ function renderBuyboxAccordion(p) {
     });
     items.push({ title: titles.shippingTitle || 'Préparation & livraison', content: ul });
   }
-  makeAccordion(box, items, { exclusive: false, numbered: false, level: 'h2' });
+  makeAccordion(box, items, { exclusive: true, numbered: false, level: 'h2' });
 }
 
 /* ==================================================================
-   9. Pages produit simples (chaussons, porte-clés)
+   10. Pages produit simples (chaussons, porte-clés)
    ================================================================== */
 
 function renderSimpleProduct(p, cart, key) {
   const prod = (p.products || {})[key];
   if (!prod) { const e = q('#load-error'); if (e) { e.hidden = false; e.textContent = `Produit « ${key} » introuvable dans product.json.`; } return; }
-  const cur = p.currency;
   const sizes = Array.isArray(prod.sizes) ? prod.sizes : [];
   const state = { size: sizes[0] || '', qty: 1 };
 
   setupGallery(q('#sp-gallery'), prod.images || [], prod.name || '');
   setText('sp-name', prod.name);
-  setText('sp-price', formatPrice(prod.priceEur, cur));
+  setPrice(q('#sp-price'), prod.priceEur);
   const cmp = q('#sp-compare');
-  if (cmp) { const c = Number(prod.compareAtEur) || 0; cmp.textContent = c ? formatPrice(c, cur) : ''; cmp.hidden = !c; }
+  if (cmp) { const c = Number(prod.compareAtEur) || 0; if (c) setPrice(cmp, c); cmp.hidden = !c; }
   setText('sp-desc', prod.description);
 
   const sizeOpt = q('#sp-size-option');
@@ -1150,12 +1403,13 @@ function renderSimpleProduct(p, cart, key) {
     }
   }
   const qtyBox = q('#sp-qty');
-  if (qtyBox) qtyBox.append(makeQty({ value: 1, onChange: (v) => { state.qty = v; } }));
+  if (qtyBox) qtyBox.append(makeQty({ value: 1, onChange: (v) => { state.qty = v; document.dispatchEvent(new CustomEvent('subtotalchange')); } }));
 
   const bl = q('#sp-bullets');
   if (bl && Array.isArray(prod.bullets)) prod.bullets.forEach((t) => { const li = el('li'); li.innerHTML = `${icon('check')}<span>${escapeHtml(t)}</span>`; bl.append(li); });
 
-  function addToCart() { cart.add([{ id: key, size: state.size, color: '', qty: state.qty }]); cart.open(); }
+  const lines = () => [{ id: key, size: state.size, color: '', qty: state.qty }];
+  const addToCart = () => addToCartAndOpen(cart, lines());
   const cta = q('#cta');
   if (cta) cta.addEventListener('click', addToCart);
 
@@ -1166,17 +1420,18 @@ function renderSimpleProduct(p, cart, key) {
     [['box', s.processing], ['globe', s.international], ['truck', s.france]].filter(([, t]) => t).forEach(([ic, text]) => {
       const li = el('li'); li.innerHTML = `${icon(ic)}<span>${escapeHtml(text)}</span>`; ul.append(li);
     });
-    makeAccordion(acc, [{ title: (p.buyboxAccordion || {}).shippingTitle || 'Préparation & livraison', content: ul }], { level: 'h2' });
+    makeAccordion(acc, [{ title: (p.buyboxAccordion || {}).shippingTitle || 'Préparation & livraison', content: ul }], { exclusive: true, level: 'h2' });
   }
-  setupStickyBar({ getPrice: () => round2((Number(prod.priceEur) || 0) * state.qty), label: prod.name, onClick: addToCart, anchor: cta });
+  setupStickyBar({ getPrice: () => round2((Number(prod.priceEur) || 0) * state.qty), label: prod.name, onClick: addToCart, canAdd: () => !sizes.length || Boolean(state.size), anchor: cta });
 }
 
 /* ==================================================================
-   10. Sections partagées
+   11. Sections partagées
    ================================================================== */
 
-/* Diaporama : GIF 9:16 centré sur fond sombre ; seule la 1re diapo est
-   chargée au départ (les autres au moment de leur affichage). */
+/* Diaporama : GIF 9:16 centré sur fond sombre, défilement automatique
+   (pause au survol / hors écran), points et flèches ; seule la 1re diapo
+   est chargée au départ (les autres au moment de leur affichage). */
 function setupSlideshow(s) {
   const root = q('#slideshow');
   if (!root) return;
@@ -1237,8 +1492,10 @@ function setupSlideshow(s) {
   go(0);
 }
 
-/* « Vu sur TikTok » : vidéos auto-hébergées (v.src) pour une lecture fiable en démo,
-   avec repli sur l'iframe /embed/v2 si aucun fichier n'est fourni. */
+/* « Vu sur TikTok » : 3 vidéos. Si `src` (fichier local) est renseigné, on
+   l'affiche en <video> et on bascule sur l'iframe /embed/v2 si le fichier
+   manque ; sinon iframe directement (aucun script externe requis).
+   Le champ `url` n'est jamais affiché. */
 function renderTiktok(p) {
   const t = p.tiktok || {};
   const grid = q('#tiktok-grid');
@@ -1248,15 +1505,19 @@ function renderTiktok(p) {
   if (!videos.length) { if (section) section.hidden = true; return; }
   setText('tiktok-title', t.title || 'Vu sur TikTok');
   setText('tiktok-sub', t.subtitle || '');
+  const iframeHtml = (v, i) => `<iframe src="https://www.tiktok.com/embed/v2/${encodeURIComponent(String(v.id))}" width="325" height="575" loading="lazy" allow="encrypted-media" allowfullscreen title="Vidéo TikTok ${i + 1} – ${escapeHtml(p.brand || '')}"></iframe>`;
   videos.forEach((v, i) => {
     const item = el('div', 'tiktok__item');
-    const media = v.src
-      ? `<video src="${escapeHtml(v.src)}" controls muted loop playsinline preload="metadata" title="Vidéo TikTok ${i + 1}"></video>`
-      : `<iframe src="https://www.tiktok.com/embed/v2/${encodeURIComponent(String(v.id))}" width="325" height="575" loading="lazy" allow="encrypted-media" allowfullscreen title="Vidéo TikTok ${i + 1} – ${escapeHtml(p.brand || '')}"></iframe>`;
-    const link = v.url ? `<a class="tiktok__link" href="${escapeHtml(v.url)}" target="_blank" rel="noopener">Voir sur TikTok</a>` : '';
+    const local = typeof v.src === 'string' && /^[\w./-]+\.(mp4|webm|mov)$/i.test(v.src);
     item.innerHTML = `
-      <div class="tiktok__frame">${media}</div>
-      <p class="tiktok__views">${icon('play')}<span>${escapeHtml(v.views || '')}</span>${link}</p>`;
+      <div class="tiktok__frame">
+        ${local
+          ? `<video src="${escapeHtml(v.src)}" controls muted loop playsinline preload="metadata" width="325" height="575" aria-label="Vidéo TikTok ${i + 1} – ${escapeHtml(p.brand || '')}"></video>`
+          : iframeHtml(v, i)}
+      </div>
+      <p class="tiktok__views">${icon('play')}<span>${escapeHtml(v.views || '')}</span></p>`;
+    const video = item.querySelector('video');
+    if (video) video.addEventListener('error', () => { video.outerHTML = iframeHtml(v, i); }, { once: true });
     grid.append(item);
   });
 }
@@ -1273,10 +1534,10 @@ function renderTestimonials(p) {
   list.forEach((t) => {
     const card = el('article', 'review');
     card.innerHTML = `
+      ${t.avatar ? `<img class="review__avatar" src="${escapeHtml(t.avatar)}" alt="" width="66" height="66" loading="lazy">` : ''}
       <div class="review__head">
-        ${t.avatar ? `<img class="review__avatar" src="${escapeHtml(t.avatar)}" alt="" width="46" height="46" loading="lazy">` : ''}
-        <span><span class="review__name">${escapeHtml(t.name || 'Client')}</span>
-        ${t.verified ? `<span class="review__verified">${icon('check')} Achat vérifié</span>` : ''}</span>
+        <span class="review__name">${escapeHtml(t.name || 'Client')}</span>
+        ${t.verified ? `<span class="review__verified">${icon('check')} Achat vérifié</span>` : ''}
       </div>
       <span class="stars stars--sm" role="img" aria-label="5 étoiles sur 5">${starsHtml(5)}</span>
       ${t.title ? `<h3>${escapeHtml(t.title)}</h3>` : ''}
@@ -1335,8 +1596,20 @@ function setupContact(p) {
   });
 }
 
-/* Barre d'achat fixe (mobile) : visible dès que le CTA sort de l'écran */
-function setupStickyBar({ getPrice, label, onClick, anchor }) {
+/* Page « Connexion » (démo : aucun compte) */
+function setupLogin() {
+  const form = q('#login-form');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = form.querySelector('input[type="email"]');
+    if (input && !input.checkValidity()) { input.focus(); toast('Adresse e-mail invalide'); return; }
+    toast('Démo : la connexion n\'est pas disponible.');
+  });
+}
+
+/* Bouton d'achat flottant (desktop, pastille en bas à droite) / barre fixe
+   (mobile) : visible dès que le CTA principal est sorti de l'écran. */
+function setupStickyBar({ getPrice, label, onClick, canAdd = () => true, anchor }) {
   const bar = q('#sticky-bar');
   const btn = q('#sticky-cta');
   if (!bar || !btn || !anchor) return;
@@ -1344,21 +1617,32 @@ function setupStickyBar({ getPrice, label, onClick, anchor }) {
   const price = q('#sticky-price');
   const lab = q('#sticky-label');
   if (lab) lab.textContent = label || '';
-  const refresh = () => { if (price) price.textContent = formatPrice(getPrice(), 'eur'); };
+  btn.innerHTML = `${icon('cart')}<span>Ajouter au panier</span><span class="sticky-bar__sep" aria-hidden="true">·</span><span class="sticky-bar__btnprice" data-eur="0"></span>`;
+  const btnPrice = btn.querySelector('.sticky-bar__btnprice');
+  const refresh = () => { const v = getPrice(); setPrice(price, v); setPrice(btnPrice, v); };
   refresh();
+  document.addEventListener('subtotalchange', refresh);
   document.addEventListener('change', refresh);
   document.addEventListener('click', () => setTimeout(refresh, 0));
-  btn.addEventListener('click', onClick);
+  btn.addEventListener('click', () => {
+    if (!canAdd()) {
+      const box = q('#buybox');
+      if (box) box.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
+      toast('Choisissez d\'abord une taille');
+      return;
+    }
+    onClick();
+  });
   if (!('IntersectionObserver' in window)) { bar.classList.add('is-visible'); bar.setAttribute('aria-hidden', 'false'); return; }
   new IntersectionObserver(([entry]) => {
     const show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
     bar.classList.toggle('is-visible', show);
     bar.setAttribute('aria-hidden', String(!show));
-  }, { rootMargin: '-72px 0px 0px 0px' }).observe(anchor);
+  }, { rootMargin: '-100px 0px 0px 0px' }).observe(anchor);
 }
 
 /* ==================================================================
-   11. Utilitaires
+   12. Utilitaires
    ================================================================== */
 
 function q(sel) { return document.querySelector(sel); }
@@ -1374,11 +1658,11 @@ function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
-
-function formatPrice(amount, currency) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: (currency || 'eur').toUpperCase() }).format(Number(amount) || 0);
+function normalize(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
 }
+
+function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
 
 /* Ne garde que [A-Za-z0-9_-] (200 caractères max) pour client_reference_id. */
 function sanitizeRef(s) {

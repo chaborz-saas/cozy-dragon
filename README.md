@@ -18,8 +18,19 @@ Toutes les pages portent `<meta name="robots" content="noindex,nofollow">` et un
 | `politique-de-confidentialite.html`, `mentions-legales.html`, `cgv.html`, `retours.html` | Pages légales (marqueurs `[À COMPLÉTER]`) |
 | `merci.html` | Page de remerciement après paiement |
 
-Éléments communs injectés par `app.js` sur toutes les pages : barre d'annonce défilante, menu mobile, recherche (démo),
-tiroir panier, boîte de consentement cookies (cosmétique, aucun traceur), visionneuse plein écran.
+| `connexion.html` | Page « Connexion » façon Shopify (démo : aucun compte) |
+
+Éléments communs injectés par `app.js` sur toutes les pages : barre d'annonce défilante, menu mobile (avec sélecteur pays),
+recherche avec suggestions (les 3 produits, filtrées à la frappe), sélecteur « EUR ▾ » pays/devise (table de conversion fixe
+dans `app.js` → `COUNTRIES`, choix mémorisé, **paiement Stripe toujours en EUR**), tiroir panier (lignes, quantité, suppression,
+protection d'expédition, barre « livraison offerte » dès `cart.freeShippingEur`), boîte de consentement cookies (3 interrupteurs,
+cosmétique, aucun traceur), modale « Guide des tailles » (accueil), popover « Plus d'options de paiement », bouton d'achat
+flottant (pastille en bas à droite sur desktop, barre pleine largeur sur mobile) dès que le CTA principal sort de l'écran,
+visionneuse plein écran, toast « Ajouté au panier ».
+
+Polices : Inter partout, « Work Sans » sur le contenu de la fiche produit (boîte d'achat, bundles, diaporama, témoignages, FAQ, contact).
+Les dimensions de référence (en-tête 122/100 px, logo 100 px, gouttières 40/16 px, boutons 52 px rayon 14, CTA produit 46 px
+rayon 6, etc.) sont commentées en tête de `styles.css`.
 
 ## Mise en ligne
 

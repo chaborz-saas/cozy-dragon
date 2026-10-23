@@ -138,8 +138,12 @@
   "purchaseProof": {
     "enabled": true,
     "avatar": "img/demo/avatar-1.jpg",
+    "avatars": ["img/demo/avatar-1.jpg", "img/demo/avatar-2.jpg", "img/demo/avatar-3.jpg"],
     "text": "Sarah et 438 personnes ont acheté"
   },
+
+  "paymentOptions": ["Stripe", "Apple Pay", "Google Pay", "PayPal"],
+  "search": { "title": "Suggestions" },
   "buyboxAccordion": {
     "sizeGuideTitle": "Guide des tailles du onesie",
     "faqTitle": "Questions fréquentes",
@@ -260,6 +264,7 @@
     "soon": "Paiement bientôt disponible",
     "discountLabel": "Remise pack",
     "closestNote": "Démo : cette combinaison n'a pas de lien Stripe dédié, le pack le plus proche est utilisé.",
+    "freeShippingEur": 100,
     "protection": {
       "enabled": true,
       "icon": "img/demo/shield.png",

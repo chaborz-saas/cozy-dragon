@@ -10,23 +10,25 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23f3efe4'/%3E%3Cpath fill='%230f3d2e' d='M33 56 C30 50 29 44 31 40 L24 24 C29 29 34 32 37 35 L36 17 C40 23 44 27 47 28 C54 26 62 27 69 31 C74 34 77 37 79 40 L74 43 L62 44 L71 48 C68 53 61 55 54 56 C47 57 39 58 33 56 Z'/%3E%3Cellipse cx='58' cy='35' rx='4.6' ry='2.7' fill='%23f3efe4'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body data-page="legal">
 
   <a class="skip-link" href="#main">Aller au contenu</a>
 
-  <!-- Bandeau démo (très discret) -->
+  <!-- Bandeau démo (16 px, très discret) -->
   <div class="demo-strip" data-demo-strip>Démo interne — images de référence, non commercial</div>
 
   <!-- Barre d'annonce défilante (texte dans product.json → announcement) -->
   <div class="announce" id="announce" role="region" aria-label="Annonce"><div class="announce__track" id="announce-track"></div></div>
 
-  <!-- En-tête -->
+  <!-- En-tête : ordre mobile = burger, loupe, logo centré, compte, panier ;
+       ordre desktop (CSS order) = logo, nav, EUR ▾, loupe, compte, panier -->
   <header class="header" id="top">
     <div class="container header__inner">
       <button type="button" class="icon-btn menu-btn" id="menu-btn" aria-label="Ouvrir le menu" aria-expanded="false" data-icon="menu"></button>
+      <button type="button" class="icon-btn search-btn" id="search-btn" aria-label="Rechercher" data-icon="search"></button>
       <a class="logo" href="./index.html" aria-label="Cozy Dragon – Accueil">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cozy Dragon">
           <circle cx="50" cy="50" r="50" fill="#f3efe4"/>
@@ -43,12 +45,9 @@
         <a href="./index.html">Accueil</a>
         <a href="./contact.html">Contact</a>
       </nav>
-      <div class="header__actions">
-        <button type="button" class="currency" aria-label="Devise : EUR" aria-disabled="true">EUR <span data-icon="chevron-down"></span></button>
-        <button type="button" class="icon-btn search-btn" id="search-btn" aria-label="Rechercher" data-icon="search"></button>
-        <a class="icon-btn account-btn" href="#" aria-label="Compte" data-icon="user"></a>
-        <button type="button" class="icon-btn cart-btn" id="cart-btn" aria-label="Ouvrir le panier"><span data-icon="cart"></span><span class="cart-count" data-cart-count hidden>0</span></button>
-      </div>
+      <button type="button" class="currency" id="currency-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Pays et devise"><span data-currency-label>EUR €</span> <span data-icon="chevron-down"></span></button>
+      <a class="icon-btn account-btn" href="./connexion.html" aria-label="Compte" data-icon="user"></a>
+      <button type="button" class="icon-btn cart-btn" id="cart-btn" aria-label="Ouvrir le panier"><span data-icon="cart"></span><span class="cart-count" data-cart-count hidden>0</span></button>
     </div>
   </header>
 

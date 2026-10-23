@@ -27,23 +27,25 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23f3efe4'/%3E%3Cpath fill='%230f3d2e' d='M33 56 C30 50 29 44 31 40 L24 24 C29 29 34 32 37 35 L36 17 C40 23 44 27 47 28 C54 26 62 27 69 31 C74 34 77 37 79 40 L74 43 L62 44 L71 48 C68 53 61 55 54 56 C47 57 39 58 33 56 Z'/%3E%3Cellipse cx='58' cy='35' rx='4.6' ry='2.7' fill='%23f3efe4'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body data-page="home">
 
   <a class="skip-link" href="#main">Aller au contenu</a>
 
-  <!-- Bandeau démo (très discret) -->
+  <!-- Bandeau démo (16 px, très discret) -->
   <div class="demo-strip" data-demo-strip>Démo interne — images de référence, non commercial</div>
 
   <!-- Barre d'annonce défilante (texte dans product.json → announcement) -->
   <div class="announce" id="announce" role="region" aria-label="Annonce"><div class="announce__track" id="announce-track"></div></div>
 
-  <!-- En-tête -->
+  <!-- En-tête : ordre mobile = burger, loupe, logo centré, compte, panier ;
+       ordre desktop (CSS order) = logo, nav, EUR ▾, loupe, compte, panier -->
   <header class="header" id="top">
     <div class="container header__inner">
       <button type="button" class="icon-btn menu-btn" id="menu-btn" aria-label="Ouvrir le menu" aria-expanded="false" data-icon="menu"></button>
+      <button type="button" class="icon-btn search-btn" id="search-btn" aria-label="Rechercher" data-icon="search"></button>
       <a class="logo" href="./index.html" aria-label="Cozy Dragon – Accueil">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cozy Dragon">
           <circle cx="50" cy="50" r="50" fill="#f3efe4"/>
@@ -60,19 +62,16 @@
         <a href="./index.html">Accueil</a>
         <a href="./contact.html">Contact</a>
       </nav>
-      <div class="header__actions">
-        <button type="button" class="currency" aria-label="Devise : EUR" aria-disabled="true">EUR <span data-icon="chevron-down"></span></button>
-        <button type="button" class="icon-btn search-btn" id="search-btn" aria-label="Rechercher" data-icon="search"></button>
-        <a class="icon-btn account-btn" href="#" aria-label="Compte" data-icon="user"></a>
-        <button type="button" class="icon-btn cart-btn" id="cart-btn" aria-label="Ouvrir le panier"><span data-icon="cart"></span><span class="cart-count" data-cart-count hidden>0</span></button>
-      </div>
+      <button type="button" class="currency" id="currency-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Pays et devise"><span data-currency-label>EUR €</span> <span data-icon="chevron-down"></span></button>
+      <a class="icon-btn account-btn" href="./connexion.html" aria-label="Compte" data-icon="user"></a>
+      <button type="button" class="icon-btn cart-btn" id="cart-btn" aria-label="Ouvrir le panier"><span data-icon="cart"></span><span class="cart-count" data-cart-count hidden>0</span></button>
     </div>
   </header>
 
   <main id="main">
     <p id="load-error" class="notice container" hidden></p>
 
-    <!-- Produit vedette : galerie + boîte d'achat -->
+    <!-- Produit vedette : galerie 636 px + colonne infos 636 px (écart 48) -->
     <section class="featured container" aria-labelledby="featured-title">
       <h2 class="sr-only" id="featured-title">Produit vedette</h2>
       <div class="featured__grid">
@@ -82,46 +81,38 @@
           <div class="gallery__track" tabindex="0" aria-live="polite"></div>
           <button type="button" class="gallery__arrow gallery__arrow--prev" aria-label="Photo précédente"></button>
           <button type="button" class="gallery__arrow gallery__arrow--next" aria-label="Photo suivante"></button>
+          <span class="gallery__counter" aria-hidden="true"></span>
         </div>
         <div class="gallery__thumbs" role="tablist" aria-label="Miniatures"></div>
       </div>
         <div class="buybox buybox--home" id="buybox">
-          <p class="buybox__vendor" id="home-vendor">Cozy Dragon</p>
           <h3 class="buybox__title"><a href="./produit.html" id="home-title">Dragon Onesie™</a></h3>
           <div class="price-row" aria-label="Prix"><span class="price__now" id="home-price">54,95 €</span></div>
 
           <div class="option">
             <p class="option__label" id="home-size-label">Taille</p>
-            <div class="pills" id="home-sizes" role="radiogroup" aria-labelledby="home-size-label"></div>
+            <div class="pills pills--row" id="home-sizes" role="radiogroup" aria-labelledby="home-size-label"></div>
+            <a class="size-guide-link" href="#guide-des-tailles" data-size-guide>Guide des tailles</a>
           </div>
           <div class="option">
-            <p class="option__label" id="home-color-label">Couleur <span id="home-color-name"></span></p>
+            <p class="option__label" id="home-color-label">Couleur <span class="option__value" id="home-color-name"></span></p>
             <div class="swatches" id="home-colors" role="radiogroup" aria-labelledby="home-color-label"></div>
           </div>
-          <div class="option">
-            <p class="option__label">Quantité</p>
-            <div id="home-qty"></div>
-          </div>
 
-          <div class="buybox__actions">
-            <button type="button" class="btn btn--olive btn--full" id="home-add">Ajouter au panier</button>
-            <button type="button" class="btn btn--purple btn--full" id="home-stripe">Payer avec Stripe</button>
-            <a class="link-more" id="home-more" href="./produit.html">Plus d'options de paiement</a>
+          <!-- Une ligne : compteur 126 | olive 244 | violet 244 (+ lien centré dessous) -->
+          <div class="buy-row">
+            <div class="buy-row__qty" id="home-qty"></div>
+            <button type="button" class="btn btn--olive" id="home-add">Ajouter au panier</button>
+            <div class="buy-row__col">
+              <button type="button" class="btn btn--purple btn--full" id="home-stripe">Payer avec Stripe</button>
+              <a class="link-more" id="home-more" href="#moyens-de-paiement">Plus d'options de paiement</a>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Vu sur TikTok (vidéos dans product.json → tiktok) -->
-    <section class="tiktok section" id="tiktok" aria-labelledby="tiktok-title">
-      <div class="container">
-        <div class="section__head">
-          <h2 class="section__title" id="tiktok-title">Vu sur TikTok</h2>
-          <p class="section__sub" id="tiktok-sub">17 millions de vues en organique</p>
-        </div>
-        <div class="tiktok__grid" id="tiktok-grid"></div>
-      </div>
-    </section>
   </main>
 
   <!-- Pied de page -->
@@ -141,6 +132,12 @@
       </div>
     </div>
   </footer>
+
+  <!-- Bouton d'achat flottant (desktop) / barre fixe (mobile) -->
+  <div class="sticky-bar sticky-bar--olive" id="sticky-bar" aria-hidden="true">
+    <div class="sticky-bar__info"><strong id="sticky-price"></strong><small id="sticky-label"></small></div>
+    <button type="button" class="btn sticky-bar__btn" id="sticky-cta">Ajouter au panier</button>
+  </div>
 
   <script src="./app.js"></script>
 </body>
