@@ -383,7 +383,7 @@ function setupMobileMenu(p) {
   if (!btn) return;
   const products = p.products || {};
   const links = [
-    ['./index.html', 'Accueil'],
+    ['./produit.html', 'Accueil'],
     ['./produit.html', 'Produit'],
     products.slippers ? ['./' + (products.slippers.page || 'chaussons.html'), 'Chaussons'] : null,
     products.keychain ? ['./' + (products.keychain.page || 'porte-cles.html'), 'Porte-clés'] : null,
