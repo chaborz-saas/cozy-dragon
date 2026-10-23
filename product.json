@@ -1,0 +1,48 @@
+{
+  "name": "Dragon Onesie™ – Pyjama dragon noir à capuche",
+  "tagline": "Le pyjama dragon ultra-doux qui transforme chaque soirée en film.",
+  "description": "Une combinaison polaire oversize avec capuche dragon, yeux brodés et cornes en relief. Pensée pour les soirées canapé, les marathons de films et les nuits d'hiver : chaude, douce, et impossible à enlever une fois enfilée. Unisexe, du S au XXL.",
+  "priceEur": 49.90,
+  "compareAtEur": 69.90,
+  "currency": "eur",
+  "images": [
+    "img/1.jpg",
+    "img/2.jpg",
+    "img/3.jpg",
+    "img/4.jpg",
+    "img/5.jpg"
+  ],
+  "bullets": [
+    "Polaire épaisse ultra-douce : chaud sans transpirer",
+    "Capuche dragon avec yeux brodés et cornes en relief",
+    "Coupe oversize unisexe, du S au XXL (prendre une taille au-dessus)",
+    "Lavable en machine, ne bouloche pas, ne déteint pas"
+  ],
+  "faq": [
+    {
+      "q": "Quels sont les délais de livraison ?",
+      "a": "Votre commande est préparée sous 1 à 3 jours ouvrés puis expédiée avec un numéro de suivi. Comptez 8 à 15 jours ouvrés pour la France et la Belgique, un peu plus pour le reste de l'Europe."
+    },
+    {
+      "q": "Quelle taille choisir ?",
+      "a": "La coupe est volontairement oversize. Si vous hésitez entre deux tailles, prenez la plus grande : vous serez plus à l'aise pour vous lover dedans. Guide : S 150-160 cm · M 160-170 cm · L 170-180 cm · XL 180-190 cm · XXL 190 cm et plus."
+    },
+    {
+      "q": "Puis-je le porter pour dormir ?",
+      "a": "Oui. La polaire est respirante et la coupe ample : parfait pour dormir, traîner à la maison, ou pour une soirée à thème. Il se lave en machine à 30 °C."
+    },
+    {
+      "q": "Puis-je retourner le produit si je change d'avis ?",
+      "a": "Oui. Vous disposez de 14 jours après réception pour nous le renvoyer non porté, dans son état d'origine. Écrivez-nous et nous vous indiquons la marche à suivre."
+    },
+    {
+      "q": "Le paiement est-il sécurisé ?",
+      "a": "Le paiement est traité par Stripe, leader mondial du paiement en ligne. Vos données bancaires ne transitent jamais par notre site."
+    }
+  ],
+  "shippingNote": "Expédition sous 1 à 3 jours ouvrés · Livraison suivie en 8 à 15 jours ouvrés",
+  "paymentLink": "",
+  "brand": "Cozy Dragon",
+  "supportEmail": "contact@example.com",
+  "instagram": ""
+}
