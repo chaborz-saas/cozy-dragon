@@ -41,3 +41,16 @@ XLegacy et Galactic Threads : volumes similaires mais IP Disney / succession Jui
 
 - **Set laser tag** (skit IA « Do NOT let a boy dad see this », 1,2 M vues le 9/10 chez @voltag.co). Fournisseur vérifié : VATOS 4 pistolets 92,99 €, 345 vendus, livraison gratuite depuis l'Allemagne (≈1 semaine), sets 2 pistolets 20-35 €. Écarté le 23/10 : « trop vu » selon Félix. À ressortir si un nouveau format IA relance la catégorie.
 - **Clone TwiHoods** (zip-up cagoule, fandom Twilight) : écarté — plus de vêtements ; impression possible en POD expédié directement (Printful EU) si on y revient.
+
+## Prospects NON-vêtement (2e recherche TikTok connectée, 23/10)
+
+| # | Marque / compte | Produit · prix | Store créé | Vues top (date) | Format IA | Pubs Meta | Copieurs | Tendance |
+|---|---|---|---|---|---|---|---|---|
+| 1 | **NovaNest / CloudNest** · @novanestpillows · novanest-11840.myshopify.com | oreiller cervical mémoire de forme 2-en-1 · 89,99 $ | 15 oct. (VÉRIFIÉ) | **3,6 M** (19/10, 206 K likes, 58 K saves), les 9 autres < 6 K | REPORTÉ (photo→vidéo, pas de skit, pas de label) | 0 (les 1 600 « NovaNest » = immobilier) | aucun | compte de 6 j, 1 post/jour — **1 hit, à confirmer sous 48 h** |
+| 2 | Projecteur plafond Noël · Snowlit / MerryGlow / Glowmas | projecteur ciel de Noël · 39-55 $ | 17-28 sept. | 1,1 M, 1 M, 483 K (21-25 sept.), 67 K likes (6/10, label IA VÉRIFIÉ) | skit « Christmas moms RUN to Costco/IKEA » | n/s | **≥ 12** (TikTok Shop, FR, Côte d'Ivoire…) | pic passé, saturé |
+| 3 | Laser tag · @voltag.co | set 4 pistolets | — (produit retiré du store) | 1,2 M, 247 K, 234 K (9-10/10) | skit « boy dad » | — | 2 (sans traction) | demande réelle, opérateur parti · **écarté (« trop vu »)** |
+| 4 | CrownGlow · @crownglow.us | lampe « book nook » | pas de store | 27 K, 10 K (20-22/10) | skit « Book girlies RUN to Target » | — | — | testeur multi-produits, faible |
+
+Fournisseur oreiller : AliExpress « oreiller cervical mémoire de forme contour » 7-22 € (listing générique 50 000+ vendus) vs 89,99 $ chez NovaNest → prix FR conseillé 59,90-69,90 €, marge ≈ 40-50 €.
+
+**Lecture** : NovaNest est le seul non-vêtement récent, sans copieur, sans pub, sourçable tel quel. Faiblesse : un seul hit (3,6 M) sur une vidéo longue (1 min 13) de type problème/solution (« réveil avec la nuque raide »), pas le format skit — c'est un angle DTC classique porté par la vidéo. Le produit est un classique du dropshipping ; ce qui est neuf, c'est la vidéo. Décision : re-vérifier les vues de @novanestpillows le 25/10 ; si un 2e hit > 300 K, cloner.
