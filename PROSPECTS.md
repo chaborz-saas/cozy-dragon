@@ -36,3 +36,8 @@ XLegacy et Galactic Threads : volumes similaires mais IP Disney / succession Jui
 - Re-vérifier TwiHoods dans 48 h (vues du 21-23 oct.) : si un 2e hit > 200 K arrive, c'est confirmé.
 - Fournisseur à trouver : balaclava zip hoodie + impression dos (AliExpress custom print ou POD EU type Printful pour la qualité/délai).
 - La boutique Cozy Dragon est réutilisable telle quelle : changer `product.json` (nom, prix, images, bundles) = 10 minutes.
+
+## Idées notées (écartées pour l'instant)
+
+- **Set laser tag** (skit IA « Do NOT let a boy dad see this », 1,2 M vues le 9/10 chez @voltag.co). Fournisseur vérifié : VATOS 4 pistolets 92,99 €, 345 vendus, livraison gratuite depuis l'Allemagne (≈1 semaine), sets 2 pistolets 20-35 €. Écarté le 23/10 : « trop vu » selon Félix. À ressortir si un nouveau format IA relance la catégorie.
+- **Clone TwiHoods** (zip-up cagoule, fandom Twilight) : écarté — plus de vêtements ; impression possible en POD expédié directement (Printful EU) si on y revient.
