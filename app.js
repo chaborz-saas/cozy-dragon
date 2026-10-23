@@ -105,7 +105,7 @@ function fillCommon(p) {
   });
   setSocial('instagram', p.instagram);
   setSocial('tiktok', p.tiktok);
-  probeLogo(p.brand);
+  if (p.logo) probeLogo(p.brand, p.logo);
 }
 
 /* Liens réseaux sociaux : masqués si l'URL est vide. */
@@ -118,8 +118,9 @@ function setSocial(network, url) {
   });
 }
 
-/* Logo : si img/logo.png existe, il remplace le nom de marque en texte. */
-function probeLogo(brand) {
+/* Logo : si product.json.logo pointe vers une image existante (ex. "img/logo.png"),
+   elle remplace le nom de marque en texte. Champ absent = pas de requête, pas de 404. */
+function probeLogo(brand, logoPath) {
   const link = q('[data-brand-link]');
   if (!link) return;
   const img = new Image();
@@ -132,7 +133,7 @@ function probeLogo(brand) {
     if (text) text.hidden = true;
     link.prepend(img);
   };
-  img.src = './img/logo.png';
+  img.src = logoPath;
 }
 
 /* ==================================================================
